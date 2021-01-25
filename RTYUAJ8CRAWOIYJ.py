@@ -1,9 +1,3 @@
-# TODO: 拳击、脚踢， 多画一笔
-# 拳击-1
-# 脚踢-2
-# 2秒拳击
-# 3秒脚踢
-# 近战最好， 用它不急
 import pgzrun,pygame
 import math
 import pygame
@@ -64,6 +58,10 @@ bzs=[]
 azs=[]
 az.show=True
 bz.show=True
+aq_show = False
+at_show = False
+bq_show = False
+bt_show = False
 pygame.mixer.init()
 pygame.mixer.music.load(file)
 pygame.mixer.music.play(-1)
@@ -161,6 +159,10 @@ def az_update(keyboard):
         ee+=1
     if keyboard.c:
         ee-=1
+def peng():
+    # TODO
+    getRect("a")
+    getRect("b")
 def bz_update(keyboard):
     global am,oo,bzcs
     if keyboard.o:
@@ -192,6 +194,15 @@ def bz_update(keyboard):
         oo+=1
     if keyboard.l:
         oo-=1
+    if peng():
+        if aq_show:
+            bm-=2
+        if at_show:
+            bm-=3
+        if bq_show:
+            am-=2
+        if bt_show:
+            am-=3
 def af_update(keyboard):
     global afcs
     if keyboard.f:
@@ -220,17 +231,51 @@ def bf_update(keyboard):
                 bf.angle+=2
     else:
         bf.show=False
-def aq(keyboard):
-    global aqcs
-    if keyboard.j:
-        if aqss - aqcs >= 6:
-            aq.show = True
+def aq_update(keyboard):
+    global aqcs,aq_show
+    if keyboard.r:
+        if aqss - aqcs >= 2:
+            aq_show = True
             aqcs = time.time()
         else:
             if (time.time() - aqcs >= 2):
-                aq.show = False
+                aq_show = False
     else:
-        aq.show = False
+        aq_show = False
+def bq_update(keyboard):
+    global bqcs,bq_show
+    if keyboard.u:
+        if bqss - bqcs >= 2:
+            bq_show = True
+            bqcs = time.time()
+        else:
+            if (time.time() - bqcs >= 2):
+                bq_show = False
+    else:
+        bq_show = False
+def at_update(keyboard):
+    global atcs,at_show
+    if keyboard.v:
+        if atss - atcs >= 3:
+            at_show = True
+            atcs = time.time()
+            atcs = time.time()
+        else:
+            if (time.time() - atcs >= 3):
+                at_show = False
+    else:
+        at_show = False
+def bt_update(keyboard):
+    global btcs, bt_show
+    if keyboard.m:
+        if btss - btcs >= 3:
+            bt_show = True
+            btcs = time.time()
+        else:
+            if (time.time() - btcs >= 3):
+                bt_show = False
+    else:
+        bt_show = False
 def zzzz(pixel_pos):
     return [int(x/16) for x in pixel_pos]
 def make_line(beg, end):
@@ -296,11 +341,15 @@ def on_mouse_move(pos, rel, buttons):
     for p in positions:
         m.put(zzzz(p), what)
 def update():
-    global azss,bzss,afss,bfss,sss
+    global azss,bzss,afss,bfss,sss,aqss,bqss,atss,btss
     azss=time.time()
     bzss=time.time()
     afss=time.time()
     bfss=time.time()
+    atss = time.time()
+    btss = time.time()
+    aqss = time.time()
+    bqss = time.time()
     jitui_update()
     knife_update()
     g_update()
@@ -421,10 +470,24 @@ def update():
     if keyboard.p:
         if p>1:
             p-=1
+def line(beg,end,color, width):
+    for i in range(width):
+        screen.draw.line(beg, end, color)
+        beg[0]+=1
+        end[0]+=1
+
+
 def draw():
     screen.fill('#'+ccccc)
-
     screen.draw.filled_circle((b,z),o,'#'+aaa)
+    if at_show:
+        line([b,z], [b+15, z+20], "#"+aaa, 4)
+    if bt_show:
+        line([c,y], [c+15, y+20], "#"+bbb, 4)
+    if aq_show:
+        line([b,z], [b+15, z-20], "#"+aaa, 4)
+    if bq_show:
+        line([c, y], [c + 15, y-20], "#"+bbb, 4)
     screen.draw.filled_circle((c,y),p,'#'+bbb)
     jitui.draw()
     knife.draw()
@@ -438,6 +501,6 @@ def draw():
     bf.show and bf.draw()
     m.draw(screen)
     screen.draw.text("am:"+str(am)+" "+"bm:"+str(bm), (1170, 0),color="black")
-    screen.draw.text("q,i-big e,p-small z,k-faster c,l-slower r,u-hit v,m-kick f,j-no hurt x,o-pong!",(200,10),color="black")
+    screen.draw.text("q,i-big e,p-small z,k-faster c,l-slower r,u-hit v,m-kick f,j-no hurt x,o-pong!",(200,15),color="black")
     screen.draw.text("1:onebrick 2:oneiron 3:oneclear 4:move 5:manybricks 6:manyirons 7:manyclear 8:onegrass 9:manygrass 0:clear all", (200, 0),color="black")
 pgzrun.go()
