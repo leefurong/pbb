@@ -44,8 +44,8 @@ c=1000
 am=1
 n=time.time()
 bm=1
-ee=10
-oo=10
+ee=20
+oo=20
 begin = None
 HEIGHT=1000
 WIDTH=1300
@@ -63,7 +63,7 @@ bz=Actor("大子弹_1")
 af=Actor("qq")
 bf=Actor("qq")
 hzjb=Actor("hzj")
-hzja = Actor("hzj")
+hzja = Actor("hzj_a")
 hzjb.show=False
 hzjb.x=1300
 hzjb.y=20
@@ -121,20 +121,20 @@ def hzb(s):
 
 def ay(keyboard):
     global aycs,ashow
-    if ayss-aycs>=8 and keyboard.x and keyboard.f:
+    if ayss-aycs>=8 and keyboard.w and keyboard.s:
         ashow=False
         aycs=time.time()
     else:
         if ayss-aycs>=3:
-            ashow=False
+            ashow=True
 def by(keyboard):
     global bycs,bshow
-    if byss - bycs >= 8 and keyboard.o and keyboard.j:
+    if byss - bycs >= 8 and keyboard.UP and keyboard.DOWN:
         bshow = False
         bycs = time.time()
     else:
         if byss - bycs >= 3:
-            bshow = False
+            bshow = True
 
 
 def getRect(shui):
@@ -649,6 +649,6 @@ def draw():
     bf.show and bf.draw()
     m.draw(screen)
     screen.draw.text("am:"+str(am)+" "+"bm:"+str(bm), (1170, 0),color="black")
-    screen.draw.text("q,i-big e,p-small z,k-faster c,l-slower r,u-hit v,m-kick f,j-no hurt x,o-pong! a,d-asplane left,right-bsplane",(200,15),color="black")
+    screen.draw.text("q,i-big e,p-small z,k-faster c,l-slower r,u-hit v,m-kick f,j-no hurt x,o-pong! a,d-asplane left,right-bsplane up,down-hide a w,s-hide b",(200,15),color="black")
     screen.draw.text("1:onebrick 2:oneiron 3:oneclear 4:move 5:manybricks 6:manyirons 7:manyclear 8:onegrass 9:manygrass 0:clear all", (200, 0),color="black")
 pgzrun.go()
