@@ -10,7 +10,17 @@ grass=Actor("898")
 m=GM(grass)
 sss=1
 b=300
+ashow=True
+bshow=True
 azss=0
+ayss=0
+aycs=0
+byss=0
+bycs=0
+hass=0
+hbss=0
+hbcs=0
+hacs=0
 azcs=0
 bzss=0
 bzcs=0
@@ -52,9 +62,19 @@ az=Actor("大子弹_1")
 bz=Actor("大子弹_1")
 af=Actor("qq")
 bf=Actor("qq")
+hzjb=Actor("hzj")
+hzja = Actor("hzj")
+hzjb.show=False
+hzjb.x=1300
+hzjb.y=20
+hzja.show = False
+hzja.x = 0
+hzja.y = 20
 af.show=False
 bf.show=False
 bzs=[]
+bzks=[]
+azks=[]
 azs=[]
 az.show=True
 bz.show=True
@@ -65,6 +85,58 @@ bt_show = False
 pygame.mixer.init()
 pygame.mixer.music.load(file)
 pygame.mixer.music.play(-1)
+def hzb_update():
+    hzjb.x-=20
+    if hzjb.show and hzjb.x%100==0:
+        newkbz = Actor("大子弹_1")
+        newkbz.center = (hzjb.x, hzjb.y)
+        newkbz.angle = newkbz.angle_to([b,z])
+        bzks.append(newkbz)
+    if hzjb.x<=0:
+        hzjb.show=False
+        hzjb.x=1300
+def hza_update():
+    hzja.x += 20
+    if hzja.show and hzja.x % 100 == 0:
+        newkaz = Actor("大子弹_1")
+        newkaz.center = (hzja.x, hzja.y)
+        newkaz.angle = newkaz.angle_to([c, y])
+        azks.append(newkaz)
+    if hzja.x >= 1300:
+        hzja.show = False
+        hzja.x = 0
+def hza(s):
+    global hacs
+    sounds.hzy.play()
+    hzja.x=0
+    hzja.show=True
+    hacs=time.time()
+def hzb(s):
+    global hbcs
+    sounds.hzy.play()
+    hzjb.x=1300
+    hzjb.show=True
+    hbcs=time.time()
+
+
+def ay(keyboard):
+    global aycs,ashow
+    if ayss-aycs>=8 and keyboard.x and keyboard.f:
+        ashow=False
+        aycs=time.time()
+    else:
+        if ayss-aycs>=3:
+            ashow=False
+def by(keyboard):
+    global bycs,bshow
+    if byss - bycs >= 8 and keyboard.o and keyboard.j:
+        bshow = False
+        bycs = time.time()
+    else:
+        if byss - bycs >= 3:
+            bshow = False
+
+
 def getRect(shui):
     if (shui=='a'):
         return Rect((b-o,z-o),(2*o,2*o))
@@ -133,6 +205,19 @@ def nq_update():
         ww=time.time()
 def az_update(keyboard):
     global bm,ee,azcs
+    if keyboard.x and keyboard.z:
+        if azss - azcs >= 10:
+            newkaz = Actor("大子弹_1")
+            newkaz.center = (b, z)
+            newkaz.angle = newkaz.angle_to([c, y])
+            azks.append(newkaz)
+            azcs = time.time()
+        else:
+            pass
+    else:
+        for az in azks:
+            if touch_edge(az):
+                azks.remove(az)
     if keyboard.x:
         if azss-azcs>=3:
             azcs=time.time()
@@ -155,23 +240,47 @@ def az_update(keyboard):
             azs.remove(az)
         if az.colliderect(Rect((c-p, y-p), (2*p, 2*p))):
             bm-=99
+    for az in azks:
+        if az.colliderect(bf) and bf.show:
+            azks.remove(az)
+    for az in azks:
+        move(az, ee)
+        if m.bomb(az):
+            azks.remove(az)
+        if az.colliderect(Rect((c - p, y - p), (2 * p, 2 * p))):
+            bm -= 99
     if keyboard.z and azss-azcs>=3:
         ee+=1
     if keyboard.c:
         ee-=1
-def peng():
-    # TODO
-    getRect("a")
-    getRect("b")
+def zx_bz():
+    for newkbz in bzks:
+        newkbz.angle = newkbz.angle_to([b, z])
+def zx_az():
+    for newkaz in azks:
+        newkaz.angle = newkaz.angle_to([c, y])
 def bz_update(keyboard):
     global am,oo,bzcs
-    if keyboard.o:
-        if bzss-bzcs>=3:
-            newbz=Actor("大子弹_1")
-            newbz.center=(c,y)
-            newbz.angle=newbz.angle_to([b,z])
-            bzs.append(newbz)
+    if keyboard.o and keyboard.k:
+        if bzss-bzcs>=10:
+            newkbz=Actor("大子弹_1")
+            newkbz.center=(c,y)
+            newkbz.angle=newkbz.angle_to([b,z])
+            bzks.append(newkbz)
             bzcs=time.time()
+        else:
+            pass
+    else:
+        for bz in bzks:
+            if touch_edge(bz):
+                bzks.remove(bz)
+    if keyboard.o:
+        if bzss - bzcs >= 3:
+            newbz = Actor("大子弹_1")
+            newbz.center = (c, y)
+            newbz.angle = newbz.angle_to([b, z])
+            bzs.append(newbz)
+            bzcs = time.time()
         else:
             pass
     else:
@@ -180,13 +289,39 @@ def bz_update(keyboard):
                 bzs.remove(bz)
     for bz in bzs:
         if 1 in m.ps(bz):
-            m.put(zzzz([bz.x, bz.y]), 0)
+            m.put(zzzz([bz.x-1, bz.y]), 0)
+            m.put(zzzz([bz.x+1, bz.y]), 0)
+            m.put(zzzz([bz.x, bz.y-1]), 0)
+            m.put(zzzz([bz.x, bz.y+1]), 0)
+            m.put(zzzz([bz.x-1, bz.y+1]), 0)
+            m.put(zzzz([bz.x+1, bz.y-1]), 0)
+            m.put(zzzz([bz.x-1, bz.y-1]), 0)
+            m.put(zzzz([bz.x+1, bz.y+1]), 0)
             bzs.remove(bz)
         if 2 in m.ps(bz):
             bzs.remove(bz)
         if bz.colliderect(af) and af.show:
             bzs.remove(bz)
+    for bz in bzks:
+        if 1 in m.ps(bz):
+            m.put(zzzz([bz.x - 1, bz.y]), 0)
+            m.put(zzzz([bz.x + 1, bz.y]), 0)
+            m.put(zzzz([bz.x, bz.y - 1]), 0)
+            m.put(zzzz([bz.x, bz.y + 1]), 0)
+            m.put(zzzz([bz.x - 1, bz.y + 1]), 0)
+            m.put(zzzz([bz.x + 1, bz.y - 1]), 0)
+            m.put(zzzz([bz.x - 1, bz.y - 1]), 0)
+            m.put(zzzz([bz.x + 1, bz.y + 1]), 0)
+            bzks.remove(bz)
+        if 2 in m.ps(bz):
+            bzks.remove(bz)
+        if bz.colliderect(af) and af.show:
+            bzks.remove(bz)
     for bz in bzs:
+        move(bz,oo)
+        if bz.colliderect(Rect((b-o, z-o), (2*o, 2*o))):
+            am-=99
+    for bz in bzks:
         move(bz,oo)
         if bz.colliderect(Rect((b-o, z-o), (2*o, 2*o))):
             am-=99
@@ -194,15 +329,6 @@ def bz_update(keyboard):
         oo+=1
     if keyboard.l:
         oo-=1
-    if peng():
-        if aq_show:
-            bm-=2
-        if at_show:
-            bm-=3
-        if bq_show:
-            am-=2
-        if bt_show:
-            am-=3
 def af_update(keyboard):
     global afcs
     if keyboard.f:
@@ -341,11 +467,15 @@ def on_mouse_move(pos, rel, buttons):
     for p in positions:
         m.put(zzzz(p), what)
 def update():
-    global azss,bzss,afss,bfss,sss,aqss,bqss,atss,btss
+    global azss,bzss,afss,bfss,sss,aqss,bqss,atss,btss,hass,hbss,ayss,byss
+    ayss = time.time()
+    byss = time.time()
     azss=time.time()
     bzss=time.time()
     afss=time.time()
     bfss=time.time()
+    hass=time.time()
+    hbss=time.time()
     atss = time.time()
     btss = time.time()
     aqss = time.time()
@@ -354,6 +484,10 @@ def update():
     knife_update()
     g_update()
     nq_update()
+    hza_update()
+    hzb_update()
+    ay(keyboard)
+    by(keyboard)
     az_update(keyboard)
     bz_update(keyboard)
     af_update(keyboard)
@@ -362,7 +496,15 @@ def update():
     at_update(keyboard)
     bq_update(keyboard)
     bt_update(keyboard)
+    zx_az()
+    zx_bz()
     global b,c,y,z,o,p,am,bm
+    if keyboard.LEFT and keyboard.RIGHT:
+        if(hbss-hbcs>=20):
+            hzb(2)
+    if keyboard.a and keyboard.d:
+        if hass-hacs>=20:
+            hza(1)
     if keyboard.k_1:
         sss=1
     if keyboard.k_2:
@@ -479,7 +621,6 @@ def line(beg,end,color, width):
 
 def draw():
     screen.fill('#'+ccccc)
-    screen.draw.filled_circle((b,z),o,'#'+aaa)
     if at_show:
         line([b,z], [b+15, z+20], "#"+aaa, 4)
     if bt_show:
@@ -488,19 +629,26 @@ def draw():
         line([b,z], [b+15, z-20], "#"+aaa, 4)
     if bq_show:
         line([c, y], [c + 15, y-20], "#"+bbb, 4)
-    screen.draw.filled_circle((c,y),p,'#'+bbb)
+    ashow and screen.draw.filled_circle((b,z),o,'#'+aaa)
+    bshow and screen.draw.filled_circle((c,y),p,'#'+bbb)
     jitui.draw()
     knife.draw()
     nq.draw()
     g.draw()
+    hzjb.show and hzjb.draw()
+    hzja.show and hzja.draw()
     for bz in bzs:
         bz.draw()
     for az in azs:
+        az.draw()
+    for bz in bzks:
+        bz.draw()
+    for az in azks:
         az.draw()
     af.show and af.draw()
     bf.show and bf.draw()
     m.draw(screen)
     screen.draw.text("am:"+str(am)+" "+"bm:"+str(bm), (1170, 0),color="black")
-    screen.draw.text("q,i-big e,p-small z,k-faster c,l-slower r,u-hit v,m-kick f,j-no hurt x,o-pong!",(200,15),color="black")
+    screen.draw.text("q,i-big e,p-small z,k-faster c,l-slower r,u-hit v,m-kick f,j-no hurt x,o-pong! a,d-asplane left,right-bsplane",(200,15),color="black")
     screen.draw.text("1:onebrick 2:oneiron 3:oneclear 4:move 5:manybricks 6:manyirons 7:manyclear 8:onegrass 9:manygrass 0:clear all", (200, 0),color="black")
 pgzrun.go()
