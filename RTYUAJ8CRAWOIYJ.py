@@ -12,6 +12,7 @@ sss=1
 b=300
 ashow=True
 bshow=True
+winner=None
 azss=0
 ayss=0
 aycs=0
@@ -562,12 +563,6 @@ def update():
             bm-=1
         elif y>z-5 and y<z:
             am-=1
-    if bm<=0:
-        print("ay")
-        exit()
-    if am<=0:
-        print("by")
-        exit()
     if keyboard.DOWN:
         y=700
     if keyboard.s:
@@ -612,6 +607,12 @@ def update():
     if keyboard.p:
         if p>1:
             p-=1
+    global winner
+    if not winner:
+        if am<=0:
+            winner = "by"
+        if bm<=0:
+            winner = "ay"
 def line(beg,end,color, width):
     for i in range(width):
         screen.draw.line(beg, end, color)
@@ -621,34 +622,37 @@ def line(beg,end,color, width):
 
 def draw():
     screen.fill('#'+ccccc)
-    if at_show:
-        line([b,z], [b+15, z+20], "#"+aaa, 4)
-    if bt_show:
-        line([c,y], [c+15, y+20], "#"+bbb, 4)
-    if aq_show:
-        line([b,z], [b+15, z-20], "#"+aaa, 4)
-    if bq_show:
-        line([c, y], [c + 15, y-20], "#"+bbb, 4)
-    ashow and screen.draw.filled_circle((b,z),o,'#'+aaa)
-    bshow and screen.draw.filled_circle((c,y),p,'#'+bbb)
-    jitui.draw()
-    knife.draw()
-    nq.draw()
-    g.draw()
-    hzjb.show and hzjb.draw()
-    hzja.show and hzja.draw()
-    for bz in bzs:
-        bz.draw()
-    for az in azs:
-        az.draw()
-    for bz in bzks:
-        bz.draw()
-    for az in azks:
-        az.draw()
-    af.show and af.draw()
-    bf.show and bf.draw()
-    m.draw(screen)
-    screen.draw.text("am:"+str(am)+" "+"bm:"+str(bm), (1170, 0),color="black")
-    screen.draw.text("q,i-big e,p-small z,k-faster c,l-slower r,u-hit v,m-kick f,j-no hurt x,o-pong! a,d-asplane left,right-bsplane up,down-hide a w,s-hide b",(200,15),color="black")
-    screen.draw.text("1:onebrick 2:oneiron 3:oneclear 4:move 5:manybricks 6:manyirons 7:manyclear 8:onegrass 9:manygrass 0:clear all", (200, 0),color="black")
+    if winner:
+        screen.draw.text(winner,(WIDTH/2-2, HEIGHT/2),color="black")
+    else:
+        if at_show:
+            line([b,z], [b+15, z+20], "#"+aaa, 4)
+        if bt_show:
+            line([c,y], [c+15, y+20], "#"+bbb, 4)
+        if aq_show:
+            line([b,z], [b+15, z-20], "#"+aaa, 4)
+        if bq_show:
+            line([c, y], [c + 15, y-20], "#"+bbb, 4)
+        ashow and screen.draw.filled_circle((b,z),o,'#'+aaa)
+        bshow and screen.draw.filled_circle((c,y),p,'#'+bbb)
+        jitui.draw()
+        knife.draw()
+        nq.draw()
+        g.draw()
+        hzjb.show and hzjb.draw()
+        hzja.show and hzja.draw()
+        for bz in bzs:
+            bz.draw()
+        for az in azs:
+            az.draw()
+        for bz in bzks:
+            bz.draw()
+        for az in azks:
+            az.draw()
+        af.show and af.draw()
+        bf.show and bf.draw()
+        m.draw(screen)
+        screen.draw.text("am:"+str(am)+" "+"bm:"+str(bm), (1170, 0),color="black")
+        screen.draw.text("q,i-big e,p-small z,k-faster c,l-slower r,u-hit v,m-kick f,j-no hurt x,o-pong! a,d-asplane left,right-bsplane up,down-hide a w,s-hide b",(200,15),color="black")
+        screen.draw.text("1:onebrick 2:oneiron 3:oneclear 4:move 5:manybricks 6:manyirons 7:manyclear 8:onegrass 9:manygrass 0:clear all", (200, 0),color="black")
 pgzrun.go()
