@@ -1,6 +1,6 @@
 import sys
 import pygame
-import pymunk 
+import pymunk
 import random
 import pymunk.pygame_util
 from peng import penglema
@@ -18,9 +18,9 @@ def add_ball(space):
     x = random.randint(120, 300)
     body.position = x, 50  # 2
     shape = pymunk.Circle(body, radius)  # 3
-    shape.elasticity = 0.9999
+    shape.elasticity = 0.9
     shape.mass = mass  # 4
-    shape.friction = 10
+    shape.friction = 0.01
     space.add(body, shape)  # 5
     return shape
 def add_dot(space, x, y, r):
@@ -48,7 +48,8 @@ def add_segment(space, point_a, point_b):
     body = pymunk.Body(body_type=pymunk.Body.STATIC)  # 1
     body.position = (0, 0)
     l1 = pymunk.Segment(body, point_a, point_b, 5)  # 2
-    l1.friction = 1  # 3
+    l1.friction = 10  # 3
+    l1.elasticity = 0.6669
     space.add(body, l1)  # 4
     segment_bodies.append((body, l1, point_a, point_b))
     return l1
@@ -116,7 +117,7 @@ def main():
         screen.blit(dangong_img, DANGONG_POS)
         pig_pos = list(pig_dot.body.position)
         pig_pos[0] -= PIG_R
-        pig_pos[1] -= PIG_R 
+        pig_pos[1] -= PIG_R
         if penglema(balls[0].body.position, 25,  pig_pos, PIG_R):
             if pig_alive:
                 space.remove(pig_dot.body, pig_dot)
