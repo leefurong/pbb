@@ -7,12 +7,21 @@ aaa=input("A颜色")
 bbb=input("B颜色")
 ccccc=input("背景颜色")
 grass=Actor("898")
+zd=Actor("zd")
 m=GM(grass)
 sss=1
 b=300
 ashow=True
 bshow=True
 winner=None
+akcs=0
+bkcs=0
+akss=0
+bkss=0
+adss=0
+adcs=0
+bdss=0
+bdcs=0
 azss=0
 ayss=0
 aycs=0
@@ -48,7 +57,7 @@ bm=1
 ee=20
 oo=20
 begin = None
-HEIGHT=1000
+HEIGHT=730
 WIDTH=1300
 kt=time.time()
 if random.randint(2,4)!=2:
@@ -65,6 +74,14 @@ af=Actor("qq")
 bf=Actor("qq")
 hzjb=Actor("hzj")
 hzja = Actor("hzj_a")
+ak=Actor("ak")
+bk=Actor("bk")
+ak.y=500
+bk.y=500
+ak.x=0
+bk.x=1300
+ak.show=False
+bk.show=False
 hzjb.show=False
 hzjb.x=1300
 hzjb.y=20
@@ -77,6 +94,10 @@ bzs=[]
 bzks=[]
 azks=[]
 azs=[]
+ads=[]
+bds=[]
+aks=[]
+bks=[]
 az.show=True
 bz.show=True
 aq_show = False
@@ -118,6 +139,55 @@ def hzb(s):
     hzjb.x=1300
     hzjb.show=True
     hbcs=time.time()
+
+
+def bk_update():
+    global am, bm
+    if bk.show:
+        bk.x -= 10 
+    if bk.show and bk.x % 100 == 0:
+        newkbz = Actor("大子弹_1")
+        newkbz.center = (bk.x, bk.y)
+        newkbz.angle = newkbz.angle_to([b, z])
+        bzks.append(newkbz)
+    if hzjb.x <= 0:
+        hzjb.show = False
+        hzjb.x = 1300
+    if bk.colliderect(Rect((b - o, z - o), (2 * o, 2 * o))) and bk.show:
+        am=-1
+    if bk.colliderect(Rect((c - p, y - p), (2 * p, 2 * p))) and bk.show:
+        bm=-1
+
+def ak_update():
+    global am, bm
+    if ak.show:
+        ak.x += 10 
+    if ak.show and ak.x % 100 == 0:
+        newkaz = Actor("大子弹_1")
+        newkaz.center = (ak.x, ak.y)
+        newkaz.angle = newkaz.angle_to([c, y])
+        azks.append(newkaz)
+    if hzja.x >= 1300:
+        hzja.show = False
+        hzja.x = 0
+    if ak.colliderect(Rect((b - o, z - o), (2 * o, 2 * o))) and ak.show:
+        am=-1
+    if ak.colliderect(Rect((c - p, y - p), (2 * p, 2 * p))) and ak.show:
+        bm=-1
+def akk(s):
+    global hacs
+    sounds.hzy.play()
+    ak.x = 0
+    ak.show = True
+    hacs = time.time()
+
+
+def bkk(s):
+    global hbcs
+    sounds.hzy.play()
+    bk.x = 1300
+    bk.show = True
+    hbcs = time.time()
 
 
 def ay(keyboard):
@@ -204,6 +274,38 @@ def nq_update():
     if n+20<=time.time():
         nq.center=(random.randint(10,1290),random.randint(10,790))
         ww=time.time()
+def ad_update(keyboard):
+    global adcs,bm
+    if keyboard.g:
+        if adss-adcs>=10:
+            newkad = Actor("zd")
+            newkad.center = (b, z)
+            ads.append(newkad)
+            adcs = time.time()
+    else:
+        for ad in ads:
+            if touch_edge(ad):
+                ads.remove(ad)
+            if ad.colliderect(Rect((c - p, y - p), (2 * p, 2 * p))):
+                bm = -1
+                ads.remove(ad)
+
+
+def bd_update(keyboard):
+    global bdcs, am
+    if keyboard.b:
+        if bdss - bdcs >= 10:
+            newkbd  = Actor("zd")
+            newkbd.center = (c, y)
+            bds.append(newkbd)
+            bdcs = time.time()
+    else:
+        for bd in bds:
+            if touch_edge(bd):
+                bds.remove(bd)
+            if bd.colliderect(Rect((b - o, z - o), (2 * o, 2 * o))):
+                am = -1
+                bds.remove(bd)
 def az_update(keyboard):
     global bm,ee,azcs
     if keyboard.x and keyboard.z:
@@ -468,7 +570,9 @@ def on_mouse_move(pos, rel, buttons):
     for p in positions:
         m.put(zzzz(p), what)
 def update():
-    global azss,bzss,afss,bfss,sss,aqss,bqss,atss,btss,hass,hbss,ayss,byss
+    global azss,bzss,afss,bfss,sss,aqss,bqss,atss,btss,hass,hbss,ayss,byss,bdss,adss,bkss,akss
+    akss=time.time()
+    bkss=time.time()
     ayss = time.time()
     byss = time.time()
     azss=time.time()
@@ -481,12 +585,16 @@ def update():
     btss = time.time()
     aqss = time.time()
     bqss = time.time()
-    jitui_update()
-    knife_update()
-    g_update()
-    nq_update()
+    adss=time.time()
+    bdss=time.time()
+    #jitui_update()
+    #knife_update()
+    #g_update()
+    #nq_update()
     hza_update()
     hzb_update()
+    ak_update()
+    bk_update()
     ay(keyboard)
     by(keyboard)
     az_update(keyboard)
@@ -497,6 +605,8 @@ def update():
     at_update(keyboard)
     bq_update(keyboard)
     bt_update(keyboard)
+    ad_update(keyboard)
+    bd_update(keyboard)
     zx_az()
     zx_bz()
     global b,c,y,z,o,p,am,bm
@@ -607,6 +717,12 @@ def update():
     if keyboard.p:
         if p>1:
             p-=1
+    if keyboard.p and keyboard.i:
+        if bkss-bkcs>=25:
+            bkk(2)
+    if keyboard.q and keyboard.z:
+        if akss - akcs >= 25:
+            akk(1)
     global winner
     if not winner:
         if am<=0:
@@ -635,12 +751,14 @@ def draw():
             line([c, y], [c + 15, y-20], "#"+bbb, 4)
         ashow and screen.draw.filled_circle((b,z),o,'#'+aaa)
         bshow and screen.draw.filled_circle((c,y),p,'#'+bbb)
-        jitui.draw()
-        knife.draw()
-        nq.draw()
-        g.draw()
+        #jitui.draw()
+        #knife.draw()
+        #nq.draw()
+        #g.draw()
         hzjb.show and hzjb.draw()
         hzja.show and hzja.draw()
+        bk.show and bk.draw()
+        ak.show and ak.draw()
         for bz in bzs:
             bz.draw()
         for az in azs:
@@ -649,10 +767,14 @@ def draw():
             bz.draw()
         for az in azks:
             az.draw()
+        for ad in ads:
+            ad.draw()
+        for bd in bds:
+            bd.draw()
         af.show and af.draw()
         bf.show and bf.draw()
         m.draw(screen)
         screen.draw.text("am:"+str(am)+" "+"bm:"+str(bm), (1170, 0),color="black")
-        screen.draw.text("q,i-big e,p-small z,k-faster c,l-slower r,u-hit v,m-kick f,j-no hurt x,o-pong! a,d-asplane left,right-bsplane up,down-hide a w,s-hide b",(200,15),color="black")
+        screen.draw.text("q,i-big e,p-small z,k-faster c,l-slower r,u-hit v,m-kick f,j-no hurt x,o-pong! a,d-asplane left,right-bsplane up,down-hide a w,s-hide b,g b-TNT  q,z a tank p,i b tank",(0,15),color="black")
         screen.draw.text("1:onebrick 2:oneiron 3:oneclear 4:move 5:manybricks 6:manyirons 7:manyclear 8:onegrass 9:manygrass 0:clear all", (200, 0),color="black")
 pgzrun.go()

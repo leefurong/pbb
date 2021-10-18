@@ -1,4 +1,4 @@
-<!DOCTYPE html
+<!DOCTYPE html>
 <html>
 
     <head>
@@ -7,12 +7,30 @@
     </head>
 
     <body>
-        <textarea rows=10 cols=70>
-            中文
-        </textarea>
-        <div>
-            <button style="font-size:100px; margin-top:30px; font-family:'楷体', '楷体_GB2312'" onclick="alert('发送成功! ')">发送!</button>
-        </div>
+
+        <form action="http://localhost:3000/" method="POST">
+            <div>
+                年: <input name="year"/>
+                月: <input name="month"/>
+                日: <input name="date"/>
+            </div>
+            <div>
+                时：<input name="hour"/>
+                分：<input name="minute"/>
+                秒：<input name="second"/>
+            </div>
+            <div>
+                邮箱：<input name="address"/>
+            </div>
+            <textarea name="msg" rows=10 cols=70>
+                中文
+            </textarea>
+            
+            <div>
+                <input type="submit" value="发送!" style="font-size:100px; margin-top:30px; font-family:'楷体', '楷体_GB2312'"></input>
+            </div>
+        </form>
+
     </body>
 
 </html>
