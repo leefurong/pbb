@@ -1,5 +1,6 @@
 import sys
 import pygame
+from actor import Actor
 import pymunk
 import random
 import pymunk.pygame_util
@@ -20,7 +21,7 @@ def add_ball(space):
     shape = pymunk.Circle(body, radius)  # 3
     shape.elasticity = 0.9
     shape.mass = mass  # 4
-    shape.friction = 0.01
+    shape.friction = 3
     space.add(body, shape)  # 5
     return shape
 def add_dot(space, x, y, r):
@@ -68,21 +69,32 @@ def add_frame(space):
 def mouse_inside(mouse_pos, left, top, right, bottom):
     mx, my = mouse_pos
     return left<=mx<=right and top<=my<=bottom
+def make_pig(space, x, y):
+    pig_dot = add_dot(space, x, y, PIG_R)
+    pig = Actor("pig.png", pig_dot, space)
+    return pig
+def make_pigs(space):
+    pigs=[]
+    for i in range(100):
+        pig = make_pig(space, 400, 200)
+        pigs.append(pig)
+    return pigs
+
+
 def main():
     global is_dragging
     pygame.init()
     screen = pygame.display.set_mode((1200, 600)) # pygame.FULLSCREEN
     dangong_img = pygame.image.load("弹弓.png").convert_alpha()
-    pig_img = pygame.image.load("pig.png").convert_alpha()
     draw_options = pymunk.pygame_util.DrawOptions(screen)
     pygame.display.set_caption("Joints. Just wait and the L will tip over")
     clock = pygame.time.Clock()
     space = pymunk.Space()  #2
     space.gravity = (0.0, 1000.0)
     l1,l2 = add_static_L(space)
-    pig_dot=add_dot(space, 400, 200, PIG_R)
     add_frame(space)
     balls = []
+    pigs = make_pigs(space)
     for i in range(1):
         ball = add_ball(space)
         # ball.body.velocity = (300, -500)
@@ -94,6 +106,9 @@ def main():
                 sys.exit(0)
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                 sys.exit(0)
+            elif event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
+                if not pigs:
+                    pigs=make_pigs(space)
             elif event.type==pygame.MOUSEBUTTONDOWN\
                 and\
                 mouse_inside(pygame.mouse.get_pos(), 100, 400, 150, 450):
@@ -115,16 +130,20 @@ def main():
             space.gravity = (0.0, 0.0)
         space.debug_draw(draw_options)
         screen.blit(dangong_img, DANGONG_POS)
-        pig_pos = list(pig_dot.body.position)
-        pig_pos[0] -= PIG_R
-        pig_pos[1] -= PIG_R
-        if penglema(balls[0].body.position, 25,  pig_pos, PIG_R):
-            if pig_alive:
-                space.remove(pig_dot.body, pig_dot)
-            pig_alive = False
-        if pig_alive:
-            screen.blit(pig_img, pig_pos)
+
+        for pig in pigs:
+            pig_pos = list(pig.position())
+            pig_pos[0] -= PIG_R
+            pig_pos[1] -= PIG_R
+            if penglema(balls[0].body.position, 25,  pig_pos, PIG_R):
+                if pig.alive:
+                    pig.kill()
+                    pigs.remove(pig)
+            pig.draw(screen)
+
+
         space.step(1 / 50.0)  #3
+
         pygame.display.flip()
         clock.tick(50)
 if __name__ == '__main__':
