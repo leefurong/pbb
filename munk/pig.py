@@ -55,6 +55,23 @@ def add_segment(space, point_a, point_b):
     segment_bodies.append((body, l1, point_a, point_b))
     return l1
 old_point = None
+def play_bgm():
+    file='music1.mp3'
+    pygame.mixer.init()
+    pygame.mixer.music.load(file)
+    pygame.mixer.music.play(-1)
+def play_fire():
+    file = '鸟飞.wav'
+    pygame.mixer.init()
+    pygame.mixer.music.load(file)
+    pygame.mixer.music.play()
+def play_drag():
+    file = '皮筋的声音.wav'
+    pygame.mixer.init()
+    pygame.mixer.music.load(file)
+    pygame.mixer.music.play()
+
+
 def far_away(p1, p2):
     x1, y1 = p1
     x2, y2 = p2
@@ -73,13 +90,16 @@ def make_pig(space, x, y):
     pig_dot = add_dot(space, x, y, PIG_R)
     pig = Actor("pig.png", pig_dot, space)
     return pig
+def make_bird(space):
+    bird_dot = add_ball(space)
+    bird = Actor("bird.png", bird_dot, space)
+    return bird
 def make_pigs(space):
     pigs=[]
-    for i in range(100):
+    for i in range(1):
         pig = make_pig(space, 400, 200)
         pigs.append(pig)
     return pigs
-
 
 def main():
     global is_dragging
@@ -93,12 +113,9 @@ def main():
     space.gravity = (0.0, 1000.0)
     l1,l2 = add_static_L(space)
     add_frame(space)
-    balls = []
     pigs = make_pigs(space)
-    for i in range(1):
-        ball = add_ball(space)
-        # ball.body.velocity = (300, -500)
-        balls.append(ball)
+    bird = make_bird(space)
+    play_bgm()
     dots = []
     while True:
         for event in pygame.event.get():
@@ -113,12 +130,15 @@ def main():
                 and\
                 mouse_inside(pygame.mouse.get_pos(), 100, 400, 150, 450):
                 is_dragging=True
+                play_drag()
             elif event.type==pygame.MOUSEBUTTONUP:
-                is_dragging=False
-                space.gravity = (0.0, 500.0)
-                x, y = pygame.mouse.get_pos()
-                x2, y2 = 130, 435
-                balls[0].body.velocity = (5*(x2 - x), 5*(y2 - y))
+                if is_dragging:
+                    play_fire()
+                    is_dragging=False
+                    space.gravity = (0.0, 500.0)
+                    x, y = pygame.mouse.get_pos()
+                    x2, y2 = 130, 435
+                    bird.body.velocity = (5*(x2 - x), 5*(y2 - y))
         left_holding = pygame.mouse.get_pressed()[0]
         global old_point, pig_alive
         screen.fill((255, 255, 255))
@@ -126,16 +146,14 @@ def main():
             pygame.draw.line(screen, (0,0,0), pygame.mouse.get_pos(), (110, 435), 5)
             pygame.draw.line(screen, (0, 0, 0), pygame.mouse.get_pos(),
                              (150, 435), 5)
-            balls[0].body.position=pygame.mouse.get_pos()
+            bird.body.position=pygame.mouse.get_pos()
             space.gravity = (0.0, 0.0)
         space.debug_draw(draw_options)
         screen.blit(dangong_img, DANGONG_POS)
-
+        bird.draw(screen)
         for pig in pigs:
             pig_pos = list(pig.position())
-            pig_pos[0] -= PIG_R
-            pig_pos[1] -= PIG_R
-            if penglema(balls[0].body.position, 25,  pig_pos, PIG_R):
+            if penglema(bird.body.position, 25,  pig_pos, PIG_R):
                 if pig.alive:
                     pig.kill()
                     pigs.remove(pig)

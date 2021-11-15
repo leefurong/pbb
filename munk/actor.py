@@ -6,6 +6,7 @@ class Actor:
         self.shape = shape
         self.alive = True
         self.space = space
+        self.body=self.shape.body
     def draw(self,screen):
         if self.alive:
             pos = list(self.shape.body.position)

@@ -106,7 +106,7 @@ bq_show = False
 bt_show = False
 pygame.mixer.init()
 pygame.mixer.music.load(file)
-pygame.mixer.music.play(-1)
+# pygame.mixer.music.play(-1)
 def hzb_update():
     hzjb.x-=20
     if hzjb.show and hzjb.x%100==0:
