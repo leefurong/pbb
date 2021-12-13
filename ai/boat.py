@@ -1,6 +1,7 @@
 import pygame,time
 from actor import Actor
 from bomb import Bomb
+from plane import Plane
 from random import randint
 from settings import Settings
 from boat_bomb import BoatBomb
@@ -22,9 +23,13 @@ class Boat(Actor):
         self.rect.y = self.base_y
         self.vy = -1
         self.is_sinking = False
-        self.buzhi_loop(fire, 2)
+        self.buzhi_loop(fire, 1)
     def fire(self):
         print("fire!")
+        bomb = BoatBomb(self.ai)
+        bomb.headingTo(Plane)
+        bomb.rect.midbottom = self.rect.midbottom
+        self.ai.add_actor(bomb)
 
     def update(self):
         super().update()
