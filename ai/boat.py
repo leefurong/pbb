@@ -12,7 +12,8 @@ def all_face_0(a, b):
 class Boat(Actor):
     def __init__(self, ai):
         def fire():
-            self.fire()
+            if not self.is_sinking:
+                self.fire()
         super().__init__(ai,
             ["boat_1.png",
              "boat_2.png",
@@ -25,10 +26,10 @@ class Boat(Actor):
         self.is_sinking = False
         self.buzhi_loop(fire, 1)
     def fire(self):
-        print("fire!")
         bomb = BoatBomb(self.ai)
+        bomb.rect.midbottom = self.rect.midtop
         bomb.headingTo(Plane)
-        bomb.rect.midbottom = self.rect.midbottom
+        print(bomb.angle)
         self.ai.add_actor(bomb)
 
     def update(self):

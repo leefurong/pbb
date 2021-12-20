@@ -1,21 +1,18 @@
 import pygame
 from bomb import Bomb
-class Plane:
+from actor import Actor
+class Plane(Actor):
     def __init__(self, ai):
-        self.ai = ai
-        self.image = pygame.image.load('images/plane.png')
-        self.rect = self.image.get_rect()
-        self.rect.midbottom = self.ai.screen.get_rect().midbottom
-        self.rect.y = 10
+        super().__init__(ai,["plane.png"])
         self.move_right = False
         self.move_left=False
-        self.dead = False
     def fire(self):
         bomb = Bomb(self.ai)
         bomb.rect.midbottom = self.rect.midbottom
         self.ai.add_actor(bomb)
 
     def check_event(self, event):
+        super().check_event(event)
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_RIGHT:
                 self.move_right = True
@@ -31,10 +28,8 @@ class Plane:
                 self.move_left = False
 
     def update(self):
+        super().update()
         if self.move_right and self.rect.right<self.ai.screen.get_rect().right:
             self.rect.x += 10
         if self.move_left and self.rect.left>self.ai.screen.get_rect().left:
             self.rect.x -= 10
-
-    def blitme(self):
-        self.ai.screen.blit(self.image, self.rect)
