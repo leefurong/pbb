@@ -6,7 +6,9 @@ def calcAngle(x1, y1, x2, y2):
     dx = x2-x1
     ans =  dx and 180 * math.atan(dy / dx)/math.pi or (dy>0 and 270 or 90)
     print("calcAngle(", x1, y1, x2, y2, "): ", ans)
-    return ans+180
+    if x2<x1:
+        ans += 180
+    return ans
 
 
 class Actor:
