@@ -28,6 +28,11 @@ class AlienInvasion:
         f = lambda a: type(a) == cls and a.face == face
         return self.find_actors(f)
 
+    def find_actors_of_class(self, cls):
+        """找到符合类要求，及编号要求的角色"""
+        f = lambda a: type(a) == cls
+        return self.find_actors(f)
+
     def pengdao(self, actor_a, cls, f=lambda _,__:True):
         """Return whatever the first one I am colliding. """
         def oneOfCls(actor):

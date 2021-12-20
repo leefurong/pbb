@@ -1,15 +1,25 @@
 import pygame
 from bomb import Bomb
+import boat_bomb
 from actor import Actor
+
+def boat_bomb_is_active(_, boatbomb):
+    return boatbomb.face==0
 class Plane(Actor):
     def __init__(self, ai):
         super().__init__(ai,["plane.png"])
         self.move_right = False
         self.move_left=False
+        self.hp = 10
     def fire(self):
         bomb = Bomb(self.ai)
         bomb.rect.midbottom = self.rect.midbottom
         self.ai.add_actor(bomb)
+    def kouxue(self):
+        self.hp -=1
+        print(self.hp)
+        if self.hp ==0:
+            self.dead = True
 
     def check_event(self, event):
         super().check_event(event)

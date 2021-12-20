@@ -29,7 +29,6 @@ class Boat(Actor):
         bomb = BoatBomb(self.ai)
         bomb.rect.midbottom = self.rect.midtop
         bomb.headingTo(Plane)
-        print(bomb.angle)
         self.ai.add_actor(bomb)
 
     def update(self):
