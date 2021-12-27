@@ -2,7 +2,7 @@ import pygame
 from bomb import Bomb
 import boat_bomb
 from actor import Actor
-
+import boat
 def boat_bomb_is_active(_, boatbomb):
     return boatbomb.face==0
 class Plane(Actor):
@@ -11,13 +11,13 @@ class Plane(Actor):
         self.move_right = False
         self.move_left=False
         self.hp = 10
+        self.mq = True
     def fire(self):
         bomb = Bomb(self.ai)
         bomb.rect.midbottom = self.rect.midbottom
         self.ai.add_actor(bomb)
     def kouxue(self):
         self.hp -=1
-        print(self.hp)
         if self.hp ==0:
             self.dead = True
 
@@ -36,10 +36,14 @@ class Plane(Actor):
                 self.move_right = False
             if event.key == pygame.K_LEFT:
                 self.move_left = False
-
     def update(self):
         super().update()
         if self.move_right and self.rect.right<self.ai.screen.get_rect().right:
-            self.rect.x += 10
+            self.rect.x += 5
         if self.move_left and self.rect.left>self.ai.screen.get_rect().left:
-            self.rect.x -= 10
+            self.rect.x -= 5
+        if boat.Boat.sl%15==0 and self.mq:
+            self.hp=10
+            self.mq=False
+        else:
+            self.mq=True

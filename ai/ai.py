@@ -5,7 +5,7 @@ from plane import Plane
 from bomb import Bomb
 from boat import Boat
 from sea import Sea
-
+from blood import Blood
 class AlienInvasion:
     def __init__(self):
         self.settings = Settings()
@@ -14,9 +14,10 @@ class AlienInvasion:
         self.actors = []
         self.actors.append(Sea(self))
         self.actors.append(Boat(self))
+        self.makeplane()
+        self.actors.append(Blood(self))
+    def makeplane(self):
         self.actors.append(Plane(self))
-
-
     def add_actor(self, actor):
         self.actors.append(actor)
     def _pengdao(self, a, b):
@@ -48,6 +49,9 @@ class AlienInvasion:
                     sys.exit()
                 for actor in self.actors:
                     actor.check_event(event)
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_r and not self.find_actors_of_class(Plane):
+                        self.makeplane()
 
             # 刷新各个角色的状态
             for actor in self.actors:
