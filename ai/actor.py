@@ -45,10 +45,12 @@ class Actor:
 
     def headingTo(self, actorClass):
         x1, y1 = self.rect.x, self.rect.y
-        target = self.ai.find_actors_of_class_and_face(actorClass, 0)[0]
-        x2, y2 = target.rect.x, target.rect.y
-        angle = calcAngle(x1, y1, x2, y2)
-        self.rotate(angle - self.angle)
+        targets = self.ai.find_actors_of_class_and_face(actorClass, 0)
+        if targets:
+            target = targets[0]
+            x2, y2 = target.rect.x, target.rect.y
+            angle = calcAngle(x1, y1, x2, y2)
+            self.rotate(angle - self.angle)
 
     def forward(self, d):
         self.rect.x += d * math.cos(self.angle*math.pi/180)

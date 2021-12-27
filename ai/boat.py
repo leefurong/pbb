@@ -26,10 +26,11 @@ class Boat(Actor):
         self.is_sinking = False
         self.buzhi_loop(fire, 1)
     def fire(self):
-        bomb = BoatBomb(self.ai)
-        bomb.rect.midbottom = self.rect.midtop
-        bomb.headingTo(Plane)
-        self.ai.add_actor(bomb)
+        if self.ai.find_actors_of_class(Plane):
+            bomb = BoatBomb(self.ai)
+            bomb.rect.midbottom = self.rect.midtop
+            bomb.headingTo(Plane)
+            self.ai.add_actor(bomb)
 
     def update(self):
         super().update()
