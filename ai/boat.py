@@ -24,6 +24,7 @@ class Boat(Actor):
         if direction == 1:
             self.rect.left = ai.screen.get_rect().left
         else:
+            direction = -1
             self.rect.right = ai.screen.get_rect().right
         self.base_y = ai.screen.get_rect().bottom-376
         self.rect.y = self.base_y
@@ -42,10 +43,6 @@ class Boat(Actor):
     def shouguangbo(self, s):
         if s=="核爆炸":
             self.dead = True
-            self.fachuan()
-
-    def fachuan(self):
-        self.ai.add_actor(Boat(self.ai, self.direction * -1))
 
     def update(self):
         super().update()
@@ -62,6 +59,8 @@ class Boat(Actor):
             self.direction=-1
         if self.rect.x<0:
             self.direction=1
+        if not self.ai.find_actors_of_class(plane.Plane):
+            Boat.sl=0
         if bomb and bomb.face == 0:
             Boat.sl+=1
             if not self.is_sinking:
@@ -75,7 +74,6 @@ class Boat(Actor):
                 self.buzhi(fanchuan, 0)
                 self.buzhi(fanchuan, 0.5)
                 self.buzhi(fanchuan, 1)
-                self.buzhi(self.fachuan, randint(1,6)/10)
                 for i in range(100):
                     self.buzhi(xc, i/10)
                 self.buzhi(qusi, 10)

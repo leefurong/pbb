@@ -7,6 +7,8 @@ class BB(Actor):
     def __init__(self, ai):
         super().__init__(ai, ["bb.png", "爆炸.png"])
         self.baozha_time = 0
+    def fine(self):
+        self.ai.faguangbo("核爆结束")
 
     def update(self):
         super().update()
@@ -16,6 +18,7 @@ class BB(Actor):
             self.next_face()
             self.rect.center = (self.ai.screen.get_rect().center[0]-400, self.ai.screen.get_rect().center[1]-300)
             self.ai.faguangbo("核爆炸")
+            self.buzhi(self.fine, 5)
             self.baozha_time = time.time()
         if self.face == 1 and self.baozha_time + 5<= time.time():
             self.dead = True

@@ -14,3 +14,7 @@ class BoatBomb(Bomb):
             self.baozha_time = time.time()
         if self.rect.y < 10:
             self.dead = True
+
+    def shouguangbo(self, s):
+        if s == "核爆炸":
+            self.dead = True

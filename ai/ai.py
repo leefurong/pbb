@@ -2,6 +2,7 @@ from typing import Set
 import pygame, sys, time
 from settings import Settings
 from plane import Plane
+from bbb import BBB
 from bomb import Bomb
 from boat import Boat
 from sea import Sea
@@ -14,6 +15,7 @@ class AlienInvasion:
             (self.settings.screen_width, self.settings.screen_height))
         self.actors = []
         self.actors.append(Sea(self))
+        self.actors.append(BBB(self))
         self.actors.append(Boat(self))
         self.makeplane()
         self.actors.append(Blood(self))
@@ -35,7 +37,6 @@ class AlienInvasion:
         """找到符合类要求，及编号要求的角色"""
         f = lambda a: type(a) == cls
         return self.find_actors(f)
-
     def pengdao(self, actor_a, cls, f=lambda _,__:True):
         """Return whatever the first one I am colliding. """
         def oneOfCls(actor):
