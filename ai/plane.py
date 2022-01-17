@@ -1,7 +1,9 @@
 import pygame
 from bomb import Bomb
+from bb import BB
 import boat_bomb
 from actor import Actor
+import time
 import boat
 def boat_bomb_is_active(_, boatbomb):
     return boatbomb.face==0
@@ -12,10 +14,15 @@ class Plane(Actor):
         self.move_left=False
         self.hp = 10
         self.mq = True
+        self.Btime=time.time()
     def fire(self):
         bomb = Bomb(self.ai)
         bomb.rect.midbottom = self.rect.midbottom
         self.ai.add_actor(bomb)
+    def fireB(self):
+        bb = BB(self.ai)
+        bb.rect.midbottom = self.rect.midbottom
+        self.ai.add_actor(bb)
     def kouxue(self):
         self.hp -=1
         if self.hp ==0:
@@ -31,6 +38,11 @@ class Plane(Actor):
             if event.key == pygame.K_SPACE:
                 if not self.ai.find_actors_of_class_and_face(Bomb, 0):
                     self.fire()
+            if event.key == pygame.K_b:
+                self.ai.yuyi(25, self.fireB)
+                # if time.time()-self.Btime>25:
+                #     self.fireB()
+                #     self.Btime=time.time()
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_RIGHT:
                 self.move_right = False

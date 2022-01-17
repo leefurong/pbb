@@ -16,10 +16,16 @@ class Actor:
         self.images = [pygame.image.load("images/" + p) for p in img_paths]
         self.rect = self.images[0].get_rect()
         self.dead = False
-        self.hide = False
         self.face = 0
         self.tasks = set()
         self.angle = 0
+        self.visibility = True
+    def shouguangbo(self, s):
+        pass
+    def show(self):
+        self.visibility=True
+    def hide(self):
+        self.visibility = False
 
     def set_face_number(self, x):
         self.face = x
@@ -57,7 +63,8 @@ class Actor:
         self.rect.y -= d * math.sin(self.angle*math.pi/180)
 
     def blitme(self):
-        self.ai.screen.blit(self.images[self.face], self.rect)
+        if self.visibility:
+            self.ai.screen.blit(self.images[self.face], self.rect)
 
     def buzhi(self, task, seconds):
         task_time = time.time() + seconds

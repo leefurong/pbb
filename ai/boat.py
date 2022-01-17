@@ -39,6 +39,13 @@ class Boat(Actor):
             if random.randint(1,2)==1:
                 bomb.rotate(random.randint(-90, 90))
             self.ai.add_actor(bomb)
+    def shouguangbo(self, s):
+        if s=="核爆炸":
+            self.dead = True
+            self.fachuan()
+
+    def fachuan(self):
+        self.ai.add_actor(Boat(self.ai, self.direction * -1))
 
     def update(self):
         super().update()
@@ -64,12 +71,11 @@ class Boat(Actor):
                     self.rect.y+=5
                 def qusi():
                     self.dead = True
-                def fachuan():
-                    self.ai.add_actor(Boat(self.ai, self.direction * -1))
+
                 self.buzhi(fanchuan, 0)
                 self.buzhi(fanchuan, 0.5)
                 self.buzhi(fanchuan, 1)
-                self.buzhi(fachuan, randint(1,6)/10)
+                self.buzhi(self.fachuan, randint(1,6)/10)
                 for i in range(100):
                     self.buzhi(xc, i/10)
                 self.buzhi(qusi, 10)

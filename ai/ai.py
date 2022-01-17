@@ -1,11 +1,12 @@
 from typing import Set
-import pygame, sys
+import pygame, sys, time
 from settings import Settings
 from plane import Plane
 from bomb import Bomb
 from boat import Boat
 from sea import Sea
 from blood import Blood
+from bb import BB
 class AlienInvasion:
     def __init__(self):
         self.settings = Settings()
@@ -16,6 +17,7 @@ class AlienInvasion:
         self.actors.append(Boat(self))
         self.makeplane()
         self.actors.append(Blood(self))
+        self.yuyi_memory = {}
     def makeplane(self):
         self.actors.append(Plane(self))
     def add_actor(self, actor):
@@ -41,6 +43,18 @@ class AlienInvasion:
         for actor_b in filter(oneOfCls, self.actors):
             if self._pengdao(actor_a, actor_b) and f(actor_a, actor_b):
                 return actor_b
+    def yuyi(self, t, f):
+        now = time.time()
+        if now-self.yuyi_memory.get(f, 0) >= t:
+            self.yuyi_memory[f] = now
+            f()
+    def delete(self,cls):
+        for i in cls:
+            self.actors.remove(i)
+    def faguangbo(self, s):
+        actors = self.actors.copy()
+        for actor in actors:
+            actor.shouguangbo(s)
     def run_game(self):
         while True:
             # 事件检测、处理
