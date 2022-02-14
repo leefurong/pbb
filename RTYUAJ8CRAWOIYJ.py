@@ -106,7 +106,7 @@ bq_show = False
 bt_show = False
 pygame.mixer.init()
 pygame.mixer.music.load(file)
-pygame.mixer.music.play(-1)
+# pygame.mixer.music.play(-1)
 def hzb_update():
     hzjb.x-=20
     if hzjb.show and hzjb.x%100==0:
@@ -570,6 +570,7 @@ def on_mouse_move(pos, rel, buttons):
     for p in positions:
         m.put(zzzz(p), what)
 def update():
+    global winner
     global azss,bzss,afss,bfss,sss,aqss,bqss,atss,btss,hass,hbss,ayss,byss,bdss,adss,bkss,akss
     akss=time.time()
     bkss=time.time()
@@ -610,6 +611,10 @@ def update():
     zx_az()
     zx_bz()
     global b,c,y,z,o,p,am,bm
+    if keyboard.SPACE and not winner==None:
+        am=10
+        bm=10
+        winner=None
     if keyboard.LEFT and keyboard.RIGHT:
         if(hbss-hbcs>=20):
             hzb(2)
@@ -723,7 +728,6 @@ def update():
     if keyboard.q and keyboard.z:
         if akss - akcs >= 25:
             akk(1)
-    global winner
     if not winner:
         if am<=0:
             winner = "by"
