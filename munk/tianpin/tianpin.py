@@ -20,32 +20,39 @@ def add_ball(space):
     shape = pymunk.Circle(body, radius)  # 3
     shape.elasticity = 0.9
     shape.mass = mass  # 4
-    shape.friction = 3
+    shape.friction = 0
     space.add(body, shape)  # 5
     return shape
 def add_tianpin(space):
     mass = 5
-    body = pymunk.Body()    
+    body = pymunk.Body()
+    body2=pymunk.Body()
     body.position = (650, 550)
-    shape = pymunk.Segment(body, (-150, 0), (150, 0), 5)  # 2
+    ban = pymunk.Segment(body, (-150, 0), (150, 0), 5)  # 2
 
-    shape.mass = mass  # 4
-    shape.friction = 0.6
-    space.add(body, shape, )  # 5
-    return shape
+    ban.mass = mass  # 4
+    ban.friction = 0.6
+    spring1 = pymunk.constraints.DampedSpring(ban.body, di.body, (-150, 0), (500, 585), 15, 100, 3)
+    spring2 = pymunk.constraints.DampedSpring(ban.body, di.body, (150, 0),
+                                              (800, 585), 15, 100, 3)
+    space.add(body, ban, spring1, spring2)  # 5
+
+    return ban
 def add_segment(space, point_a, point_b):
     body = pymunk.Body(body_type=pymunk.Body.STATIC)  # 1
     body.position = (0, 0)
     l1 = pymunk.Segment(body, point_a, point_b, 5)  # 2
-    l1.friction = 10  # 3
+    l1.friction = 0  # 3
     l1.elasticity = 0.6669
     space.add(body, l1)  # 4
     segment_bodies.append((body, l1, point_a, point_b))
     return l1
+di=None
 def add_frame(space):
+    global di
     add_segment(space, (0, 0), (1200, 0))
     add_segment(space, (0,0), (0, 600))
-    add_segment(space, (0,600), (1200, 600))
+    di = add_segment(space, (0,600), (1200, 600))
     add_segment(space, (1200, 0), (1200, 600))
 def mouse_inside(mouse_pos, left, top, right, bottom):
     mx, my = mouse_pos
