@@ -13,6 +13,9 @@ class Actor:
             pos[0] -= int(self.img.get_width()/2)
             pos[1] -= int(self.img.get_height()/2)
             screen.blit(self.img, pos)
+    def update(self, event):
+        print(event)
+
     def kill(self):
         self.alive=False
         self.space.remove(self.shape.body, self.shape)

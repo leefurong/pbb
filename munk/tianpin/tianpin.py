@@ -6,10 +6,9 @@ import random
 import pymunk.pygame_util
 from peng import penglema
 THECOLORS = {"lightgray": (79, 79, 79)}
-DANGONG_POS = (100, 400)
+# DANGONG_POS = (100, 400)
 PIG_POS = (350, 200)
 segment_bodies = []
-is_dragging = False
 pig_alive = True
 def add_ball(space):
     mass = 50
@@ -31,11 +30,11 @@ def add_tianpin(space):
     ban = pymunk.Segment(body, (-150, 0), (150, 0), 5)  # 2
 
     ban.mass = mass  # 4
-    ban.friction = 0.6
+    ban.friction = 2
     spring1 = pymunk.constraints.DampedSpring(ban.body, di.body, (-150, 0), (500, 585), 15, 100, 3)
     spring2 = pymunk.constraints.DampedSpring(ban.body, di.body, (150, 0),
                                               (800, 585), 15, 100, 3)
-    space.add(body, ban, spring1, spring2)  # 5
+    space.add(body, ban)  # 5spring1, spring2
 
     return ban
 def add_segment(space, point_a, point_b):
@@ -47,6 +46,19 @@ def add_segment(space, point_a, point_b):
     space.add(body, l1)  # 4
     segment_bodies.append((body, l1, point_a, point_b))
     return l1
+def add_rect(space, pos=(10, 10), weight=10, size=20):
+    body = pymunk.Body()
+    body.position = pos
+    vertices = [(-size / 2, -size / 2), (size / 2, -size / 2),
+                (size / 2, size / 2), (-size / 2, size / 2),
+                ]
+    shape = pymunk.Poly(body, vertices)
+    shape.elasticity = 0.8
+    shape.mass = 50
+    shape.friction = 0.05
+    space.add(body, shape)
+    return shape
+
 di=None
 def add_frame(space):
     global di
@@ -61,10 +73,12 @@ def make_pig(space, x, y):
     pig_dot = add_tianpin(space)
     pig = Actor("pig.png", pig_dot, space)
     return pig
-def make_bird(space):
-    bird_dot = add_ball(space)
-    bird = Actor("bird.png", bird_dot, space)
-    return bird
+def make_fama(space,pos):
+    bianchang = 50
+    fang = add_rect(space,pos, 0.001, bianchang)
+    a = Actor("fama.png", fang, space)
+    a.bianchang = bianchang
+    return a
 def connect(space, pig_a):
     a= pig_a.body
     zhidian_body = pymunk.Body(body_type=pymunk.Body.STATIC)
@@ -72,10 +86,10 @@ def connect(space, pig_a):
     space.add(c)
 
 def main():
-    global is_dragging
+    is_dragging=None
     pygame.init()
     screen = pygame.display.set_mode((1200, 600)) # pygame.FULLSCREEN
-    dangong_img = pygame.image.load("弹弓.png").convert_alpha()
+    # dangong_img = pygame.image.load("弹弓.png").convert_alpha()
     draw_options = pymunk.pygame_util.DrawOptions(screen)
     pygame.display.set_caption("Joints. Just wait and the L will tip over")
     clock = pygame.time.Clock()
@@ -83,7 +97,7 @@ def main():
     space.gravity = (0.0, 1000.0)
     add_frame(space)
     pig = make_pig(space, 500, 300)
-    bird = make_bird(space)
+    famas = [make_fama(space,(100,100))]
     dots = []
     connect(space, pig)
     while True:
@@ -92,31 +106,30 @@ def main():
                 sys.exit(0)
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                 sys.exit(0)
-            elif event.type==pygame.MOUSEBUTTONDOWN\
-                and\
-                mouse_inside(pygame.mouse.get_pos(), 100, 400, 150, 450):
-                is_dragging=True
+            elif event.type==pygame.MOUSEBUTTONDOWN:
+                for fama in famas:
+                    l = fama.body.position[0]-fama.bianchang/2
+                    r = fama.body.position[0]+fama.bianchang/2
+                    t = fama.body.position[1] - fama.bianchang / 2
+                    b = fama.body.position[1] + fama.bianchang / 2
+                    if mouse_inside(pygame.mouse.get_pos(), l,t,r,b):
+                        is_dragging=fama
 
             elif event.type==pygame.MOUSEBUTTONUP:
                 if is_dragging:
-
-                    is_dragging=False
-                    space.gravity = (0.0, 500.0)
-                    x, y = pygame.mouse.get_pos()
-                    x2, y2 = 130, 435
-                    bird.body.velocity = (5*(x2 - x), 5*(y2 - y))
+                    is_dragging=None
+                    space.gravity = (0.0, 1000.0)
+            elif event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
+                famas.append(make_fama(space,pygame.mouse.get_pos()))
         left_holding = pygame.mouse.get_pressed()[0]
         global old_point, pig_alive
         screen.fill((255, 255, 255))
         if is_dragging:
-            pygame.draw.line(screen, (0,0,0), pygame.mouse.get_pos(), (110, 435), 5)
-            pygame.draw.line(screen, (0, 0, 0), pygame.mouse.get_pos(),
-                             (150, 435), 5)
-            bird.body.position=pygame.mouse.get_pos()
+            is_dragging.body.position=pygame.mouse.get_pos()
             space.gravity = (0.0, 0.0)
         space.debug_draw(draw_options)
-        screen.blit(dangong_img, DANGONG_POS)
-        bird.draw(screen)
+        # screen.blit(dangong_img, DANGONG_POS)
+        # fama.draw(screen)
 
 
         space.step(1 / 50.0)  #3
