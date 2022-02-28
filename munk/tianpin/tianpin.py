@@ -10,12 +10,13 @@ THECOLORS = {"lightgray": (79, 79, 79)}
 PIG_POS = (350, 200)
 segment_bodies = []
 pig_alive = True
-def add_ball(space):
+re=1
+def add_ball(space,pos=(10,10),bc=25):
     mass = 50
-    radius = 25
+    radius = bc/2
     body = pymunk.Body()  # 1
     x = random.randint(120, 300)
-    body.position = x, 50  # 2
+    body.position = pos # 2
     shape = pymunk.Circle(body, radius)  # 3
     shape.elasticity = 0.9
     shape.mass = mass  # 4
@@ -31,10 +32,10 @@ def add_tianpin(space):
 
     ban.mass = mass  # 4
     ban.friction = 2
-    spring1 = pymunk.constraints.DampedSpring(ban.body, di.body, (-150, 0), (500, 585), 15, 100, 3)
+    spring1 = pymunk.constraints.DampedSpring(ban.body, di.body, (-150, 0), (500, 585), 15, 100, 50)
     spring2 = pymunk.constraints.DampedSpring(ban.body, di.body, (150, 0),
-                                              (800, 585), 15, 100, 3)
-    space.add(body, ban)  # 5spring1, spring2
+                                              (800, 585), 15, 100, 50)
+    space.add(body, ban, spring1, spring2)  # 5spring1, spring2
 
     return ban
 def add_segment(space, point_a, point_b):
@@ -59,6 +60,10 @@ def add_rect(space, pos=(10, 10), weight=10, size=20):
     space.add(body, shape)
     return shape
 
+def clear_famas(space, famas):
+    for fama in famas:
+        space.remove(fama.shape)
+    famas.clear()
 di=None
 def add_frame(space):
     global di
@@ -75,7 +80,10 @@ def make_pig(space, x, y):
     return pig
 def make_fama(space,pos):
     bianchang = 50
-    fang = add_rect(space,pos, 0.001, bianchang)
+    if re==1:
+        fang = add_rect(space,pos, 0.001, bianchang)
+    else:
+        fang = add_ball(space, pos, bianchang)
     a = Actor("fama.png", fang, space)
     a.bianchang = bianchang
     return a
@@ -86,6 +94,7 @@ def connect(space, pig_a):
     space.add(c)
 
 def main():
+    global re
     is_dragging=None
     pygame.init()
     screen = pygame.display.set_mode((1200, 600)) # pygame.FULLSCREEN
@@ -121,6 +130,20 @@ def main():
                     space.gravity = (0.0, 1000.0)
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
                 famas.append(make_fama(space,pygame.mouse.get_pos()))
+            elif event.type == pygame.KEYDOWN and event.key == pygame.K_r:
+                if space.gravity[1]==1000:
+                    space.gravity = (space.gravity[0], -1000)
+                else:
+                    space.gravity = (space.gravity[0], 1000)
+            elif event.type == pygame.KEYDOWN and event.key == pygame.K_e:
+                if space.gravity[0]==1000:
+                    space.gravity=(-1000,space.gravity[1])
+                else:
+                    space.gravity = (1000, space.gravity[1])
+            elif event.type == pygame.KEYDOWN and event.key == pygame.K_p:
+                clear_famas(space, famas)
+            elif event.type == pygame.KEYDOWN and event.key == pygame.K_o:
+                re*=-1
         left_holding = pygame.mouse.get_pressed()[0]
         global old_point, pig_alive
         screen.fill((255, 255, 255))
