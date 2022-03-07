@@ -9,10 +9,12 @@ THECOLORS = {"lightgray": (79, 79, 79)}
 # DANGONG_POS = (100, 400)
 PIG_POS = (350, 200)
 segment_bodies = []
+old_gravity=[]
 pig_alive = True
+ladangong=False
 re=1
-def add_ball(space,pos=(10,10),bc=25):
-    mass = 50
+def add_ball(space,pos=(10,10),bc=100,masss=10009900000990909090909090909090909090909000000):
+    mass = masss
     radius = bc/2
     body = pymunk.Body()  # 1
     x = random.randint(120, 300)
@@ -83,7 +85,7 @@ def make_fama(space,pos):
     if re==1:
         fang = add_rect(space,pos, 0.001, bianchang)
     else:
-        fang = add_ball(space, pos, bianchang)
+        fang = add_ball(space, pos, bianchang,50)
     a = Actor("fama.png", fang, space)
     a.bianchang = bianchang
     return a
@@ -94,10 +96,12 @@ def connect(space, pig_a):
     space.add(c)
 
 def main():
-    global re
-    is_dragging=None
+    global re,ladangong
+    old_gravity = []
+    is_dragging = None
     pygame.init()
     screen = pygame.display.set_mode((1200, 600)) # pygame.FULLSCREEN
+    dangong_img = pygame.image.load("弹弓.png").convert_alpha()
     # dangong_img = pygame.image.load("弹弓.png").convert_alpha()
     draw_options = pymunk.pygame_util.DrawOptions(screen)
     pygame.display.set_caption("Joints. Just wait and the L will tip over")
@@ -107,6 +111,7 @@ def main():
     add_frame(space)
     pig = make_pig(space, 500, 300)
     famas = [make_fama(space,(100,100))]
+    bird = add_ball(space)
     dots = []
     connect(space, pig)
     while True:
@@ -123,30 +128,65 @@ def main():
                     b = fama.body.position[1] + fama.bianchang / 2
                     if mouse_inside(pygame.mouse.get_pos(), l,t,r,b):
                         is_dragging=fama
+                        old_gravity = space.gravity
 
             elif event.type==pygame.MOUSEBUTTONUP:
                 if is_dragging:
                     is_dragging=None
-                    space.gravity = (0.0, 1000.0)
+                    space.gravity = old_gravity
+                    #space.gravity = (0.0, 1000.0)
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
                 famas.append(make_fama(space,pygame.mouse.get_pos()))
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_r:
                 if space.gravity[1]==1000:
+                    space.gravity = (space.gravity[0], 0)
+                elif space.gravity[1] == 0:
                     space.gravity = (space.gravity[0], -1000)
                 else:
                     space.gravity = (space.gravity[0], 1000)
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_e:
                 if space.gravity[0]==1000:
-                    space.gravity=(-1000,space.gravity[1])
+                    space.gravity=(0,space.gravity[1])
+                elif space.gravity[0] == 0:
+                    space.gravity = (-1000, space.gravity[1])
                 else:
                     space.gravity = (1000, space.gravity[1])
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_p:
                 clear_famas(space, famas)
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_o:
                 re*=-1
+            elif event.type == pygame.KEYDOWN and event.key == pygame.K_UP:
+                bird.body.velocity = (bird.body.velocity[0], -600)
+            elif event.type == pygame.KEYDOWN and event.key == pygame.K_RIGHT:
+                bird.body.velocity = (600, bird.body.velocity[1])
+            elif event.type == pygame.KEYDOWN and event.key == pygame.K_LEFT:
+                bird.body.velocity = (-600, bird.body.velocity[1])
+            elif event.type == pygame.KEYDOWN and event.key == pygame.K_DOWN:
+                bird.body.velocity = (bird.body.velocity[0], 600)
+            if event.type==pygame.MOUSEBUTTONDOWN\
+                and\
+                mouse_inside(pygame.mouse.get_pos(), 100, 400, 150, 450):
+                ladangong = True
+                old_gravity = space.gravity
+            elif event.type == pygame.MOUSEBUTTONUP:
+                if ladangong:
+                    ladangong = False
+                    space.gravity = old_gravity
+                    #space.gravity = (0.0, 500.0)
+                    x, y = pygame.mouse.get_pos()
+                    x2, y2 = 130, 435
+                    bird.body.velocity = (5 * (x2 - x), 5 * (y2 - y))
         left_holding = pygame.mouse.get_pressed()[0]
         global old_point, pig_alive
         screen.fill((255, 255, 255))
+
+        if ladangong:
+            pygame.draw.line(screen, (0,0,0), pygame.mouse.get_pos(), (110, 435), 5)
+            pygame.draw.line(screen, (0, 0, 0), pygame.mouse.get_pos(),
+                             (150, 435), 5)
+            bird.body.position=pygame.mouse.get_pos()
+            space.gravity = (0.0, 0.0)
+        screen.blit(dangong_img, (100,400))
         if is_dragging:
             is_dragging.body.position=pygame.mouse.get_pos()
             space.gravity = (0.0, 0.0)
