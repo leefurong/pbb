@@ -5,7 +5,7 @@ class Game:
     def __init__(self):
         self.screen = pygame.display.set_mode(
             (800, 800))
-        self.actors = {"ice": Ice()}
+        self.actors = {"ice": Ice(self)}
 
     def handleEvents(self):
         for event in pygame.event.get():
@@ -17,6 +17,8 @@ class Game:
 
     def draw(self):
         self.screen.fill((230, 230, 230))
+        for actor in self.actors.values():
+            actor.draw()
         pygame.display.flip()
 
     def run(self):
