@@ -1,0 +1,2 @@
+class Ice:
+    pass
