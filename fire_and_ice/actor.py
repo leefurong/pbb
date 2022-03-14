@@ -1,4 +1,4 @@
-import pygame
+import pygame, pymunk
 import time, math
 
 def calcAngle(x1, y1, x2, y2):
@@ -9,17 +9,38 @@ def calcAngle(x1, y1, x2, y2):
         ans += 180
     return ans
 
+def make_rect_shape(space, rect):
+    body = pymunk.Body()
+    body.position = rect.center
+    vertices = [
+        (rect.left - rect.center[0], rect.top - rect.center[1]),
+        (rect.right - rect.center[0], rect.top - rect.center[1]),
+        (rect.right - rect.center[0], rect.bottom - rect.center[1]),
+        (rect.left - rect.center[0], rect.bottom - rect.center[1]),
+    ]
+    shape = pymunk.Poly(body, vertices)
+    shape.elasticity = 0.8
+    shape.mass = 50
+    shape.friction = 0.05
+    space.add(body, shape)
+    return shape
+
 
 class Actor:
     def __init__(self, game, img_paths):
         self.game = game
         self.images = [pygame.image.load("images/" + p) for p in img_paths]
         self.rect = self.images[0].get_rect()
+        self.shape = make_rect_shape(game.space, self.rect)
+        self.body = self.shape.body
         self.dead = False
         self.face = 0
         self.tasks = set()
         self.angle = 0
         self.visibility = True
+
+        # self.space = game.space
+        # self.body=self.shape.body
     def shouguangbo(self, s):
         pass
     def show(self):
@@ -64,7 +85,8 @@ class Actor:
 
     def draw(self):
         if self.visibility:
-            self.game.screen.blit(self.images[self.face], self.rect)
+            # TODO: convert body rect ==> pygame rect
+            self.game.screen.blit(self.images[self.face], self.body.position)
 
     def buzhi(self, task, seconds):
         task_time = time.time() + seconds
