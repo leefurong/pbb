@@ -9,14 +9,18 @@ def calcAngle(x1, y1, x2, y2):
         ans += 180
     return ans
 
-def make_rect_shape(space, rect):
-    body = pymunk.Body()
+def make_rect_shape(space, rect, body_type=pymunk.Body.DYNAMIC):
+    body = pymunk.Body(body_type=body_type)
     body.position = rect.center
     vertices = [
-        (rect.left - rect.center[0], rect.top - rect.center[1]),
-        (rect.right - rect.center[0], rect.top - rect.center[1]),
-        (rect.right - rect.center[0], rect.bottom - rect.center[1]),
-        (rect.left - rect.center[0], rect.bottom - rect.center[1]),
+        (rect.left - rect.center[0], rect.top - rect.center[1]), # lt
+        (rect.right - rect.center[0], rect.top - rect.center[1]), # tr
+        (rect.right - rect.center[0], rect.bottom - rect.center[1]), # rb
+        (rect.left - rect.center[0], rect.bottom - rect.center[1]), # bl
+        #     lt            tr
+        #
+        #
+        #     bl------------rb
     ]
     shape = pymunk.Poly(body, vertices)
     shape.elasticity = 0.8
@@ -27,11 +31,12 @@ def make_rect_shape(space, rect):
 
 
 class Actor:
-    def __init__(self, game, img_paths):
+    def __init__(self, game, img_paths, center, body_type=pymunk.Body.DYNAMIC):
         self.game = game
         self.images = [pygame.image.load("images/" + p) for p in img_paths]
         self.rect = self.images[0].get_rect()
-        self.shape = make_rect_shape(game.space, self.rect)
+        self.rect.center=center
+        self.shape = make_rect_shape(game.space, self.rect, body_type=body_type)
         self.body = self.shape.body
         self.dead = False
         self.face = 0
@@ -66,6 +71,9 @@ class Actor:
     def check_event(self, event):
         pass
 
+    def goto(self, x, y):
+        self.body.position = x, y
+
     def rotate(self, a):
         self.angle += a
         self.images = [pygame.transform.rotate(img, a) for img in self.images]
@@ -86,7 +94,10 @@ class Actor:
     def draw(self):
         if self.visibility:
             # TODO: convert body rect ==> pygame rect
-            self.game.screen.blit(self.images[self.face], self.body.position)
+            hw = self.rect.width/2
+            hh = self.rect.height/2
+            lt = (self.body.position[0]-hw, self.body.position[1]-hh)
+            self.game.screen.blit(self.images[self.face], lt)
 
     def buzhi(self, task, seconds):
         task_time = time.time() + seconds

@@ -1,4 +1,5 @@
 from ice import Ice
+from floor import Floor
 import pygame, sys, pymunk, pymunk.pygame_util
 
 
@@ -8,11 +9,19 @@ class Game:
         self.space = pymunk.Space()  #2
         self.space.gravity = (0.0, 1000.0)
         self.screen = pygame.display.set_mode(
-            (800, 800))
+            (800, 600))
         self.draw_options = pymunk.pygame_util.DrawOptions(self.screen)
-        self.actors = {"ice": Ice(self)}
-
-
+        self.actors = {
+            # "ice": Ice(self),
+        }
+        self.addFloor()
+    def addFloor(self):
+        y = 600
+        x = 0
+        for i in range(20):
+            k = "floor"+str(i)
+            self.actors[k] = Floor(self, (x, y))
+            x += 60
     def handleEvents(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
