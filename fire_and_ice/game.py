@@ -7,14 +7,15 @@ import pygame, sys, pymunk, pymunk.pygame_util
 class Game:
     def __init__(self):
         self.space = pymunk.Space()  #2
-        self.space.gravity = (0.0, 1000.0)
+        self.space.gravity = (0.0, 400.0)
         self.screen = pygame.display.set_mode(
             (800, 600))
         self.draw_options = pymunk.pygame_util.DrawOptions(self.screen)
         self.actors = {
-            # "ice": Ice(self),
+            "ice": Ice(self),
         }
         self.addFloor()
+        self.pressing_key = set()
     def addFloor(self):
         y = 600
         x = 0
@@ -26,7 +27,14 @@ class Game:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 sys.exit()
-
+            if event.type == pygame.KEYDOWN:
+                self.pressing_key.add(event.key)
+            if event.type == pygame.KEYUP:
+                self.pressing_key.remove(event.key)
+            for actor in self.actors.values():
+                actor.check_event(event)
+    def is_pressing(self, key):
+        return key in self.pressing_key
     def update(self):
         pass
 
