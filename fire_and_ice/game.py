@@ -2,6 +2,7 @@ from ice import Ice
 from fire import Fire
 from floor import Floor
 import pygame, sys, pymunk, pymunk.pygame_util
+from game_data_loader import load
 
 
 
@@ -12,12 +13,21 @@ class Game:
         self.screen = pygame.display.set_mode(
             (800, 600))
         self.draw_options = pymunk.pygame_util.DrawOptions(self.screen)
+        self.load_data("guanqia1.txt")
         self.actors = {
             "ice": Ice(self),
             "fire": Fire(self)
         }
         self.addFloor()
         self.pressing_key = set()
+    
+    def load_data(filename):
+        actor_confs = load(filename)
+        for conf in actor_confs:
+            self.add_actor_by_conf(conf)
+
+    def add_actor_by_conf(conf):
+        pass
     def addFloor(self):
         y = 600
         x = 0

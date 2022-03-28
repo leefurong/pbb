@@ -1,0 +1,12 @@
+[
+    {"type": "wall",
+    "pos": [250, 280]},
+
+    {"id": "btn1",
+    "type": "button",
+    "pos": [300, 500]},
+
+    {"type": "door",
+    "controlled_by": "btn1",
+    "pos": [400, 600]}
+]
