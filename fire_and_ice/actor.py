@@ -43,6 +43,7 @@ class Actor:
         self.tasks = set()
         self.angle = 0
         self.visibility = True
+        self.setMoveKeys()
 
         # self.space = game.space
         # self.body=self.shape.body
@@ -60,6 +61,7 @@ class Actor:
         self.face = (self.face + 1) % len(self.images)
 
     def update(self):
+        self.setAngle(0)
         to_delete = set()
         for t in self.tasks.copy():
             task, task_time = t
@@ -67,9 +69,20 @@ class Actor:
                 task()
                 to_delete.add(t)
         self.tasks = self.tasks - to_delete
+        if self.game.is_pressing(self.move_key_right):
+            self.body.velocity = (60, self.body.velocity[1])
+        elif self.game.is_pressing(self.move_key_left):
+            self.body.velocity = (-60, self.body.velocity[1])
+
 
     def check_event(self, event):
-        pass
+        if event.type == pygame.KEYDOWN and event.key == self.move_key_up:
+            self.setVelocityY(-300)
+
+    def setMoveKeys(self, up=None, left=None, right=None):
+        self.move_key_up = up
+        self.move_key_right = right
+        self.move_key_left = left
 
     def goto(self, x, y):
         self.body.position = x, y
