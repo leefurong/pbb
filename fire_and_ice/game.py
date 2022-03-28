@@ -1,4 +1,5 @@
 from ice import Ice
+from fire import Fire
 from floor import Floor
 import pygame, sys, pymunk, pymunk.pygame_util
 
@@ -13,6 +14,7 @@ class Game:
         self.draw_options = pymunk.pygame_util.DrawOptions(self.screen)
         self.actors = {
             "ice": Ice(self),
+            "fire": Fire(self)
         }
         self.addFloor()
         self.pressing_key = set()
