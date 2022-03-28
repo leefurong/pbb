@@ -74,6 +74,9 @@ class Actor:
     def goto(self, x, y):
         self.body.position = x, y
 
+    def setAngle(self, a):
+        self.body.angle = a
+        # TODO: 还要设置图片的angle
     def rotate(self, a):
         self.angle += a
         self.images = [pygame.transform.rotate(img, a) for img in self.images]
@@ -109,3 +112,9 @@ class Actor:
             self.buzhi(task_and_add_self, every_seconds)
 
         self.buzhi(task_and_add_self, every_seconds)
+
+    def setVelocityX(self, vx):
+        self.body.velocity = (vx, self.body.velocity[1])
+
+    def setVelocityY(self, vy):
+        self.body.velocity = (self.body.velocity[0], vy)
