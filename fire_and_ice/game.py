@@ -36,7 +36,8 @@ class Game:
     def is_pressing(self, key):
         return key in self.pressing_key
     def update(self):
-        pass
+        for actor in self.actors.values():
+            actor.update()
 
     def draw(self):
         self.screen.fill((230, 230, 230))
