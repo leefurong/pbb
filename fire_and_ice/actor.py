@@ -76,8 +76,7 @@ class Actor:
 
 
     def check_event(self, event):
-        if event.type == pygame.KEYDOWN and event.key == self.move_key_up:
-            self.setVelocityY(-300)
+        pass
 
     def setMoveKeys(self, up=None, left=None, right=None):
         self.move_key_up = up
