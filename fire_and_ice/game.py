@@ -3,6 +3,7 @@ from fire import Fire
 from block import Block
 import pygame, sys, pymunk, pymunk.pygame_util
 from game_data_loader import load
+import json, time, os
 
 
 
@@ -14,13 +15,35 @@ class Game:
             (800, 600))
         self.draw_options = pymunk.pygame_util.DrawOptions(self.screen)
         self.actors={}
-        self.load_data("guanqia1.json")
+        _map = self.select_map()
+        self.load_data(_map)
         self.pressing_key = set()
-    
+        self.click_add = None
+
+    def select_map(self):
+        maps = os.listdir("guanqia/")
+        ans = self.ask(str(maps)+"\n请选择地图:  ")
+        return ans
+
+    def ask(self, question):
+        return input(question)
+
     def load_data(self, filename):
         actor_confs = load(filename)
         for conf in actor_confs:
             self.add_actor_by_conf(conf)
+    
+    def save_data(self):
+        confs = []
+        for actor in self.actors:
+            print("type of actor:", type(actor))
+            conf = actor.export_conf()
+            confs.append(conf)
+        s = json.dumps(confs)
+        filename = "guanqia/"+input("请输入地图名: ")+".json"
+        with open(filename, "w") as f:
+            f.write(s)
+
 
     def add_actor_by_conf(self, conf):
         id = conf["id"]
@@ -49,13 +72,13 @@ class Game:
         pass
 
     def add_block(self, id, pos):
-        self.actors[id] = Block(self, pos)
+        self.actors[id] = Block(id, self, pos)
 
     def add_ice(self, id):
-        self.actors[id] = Ice(self)
+        self.actors[id] = Ice(id, self)
     
     def add_fire(self, id):
-        self.actors[id] = Fire(self)
+        self.actors[id] = Fire(id, self)
 
 
     def handleEvents(self):
@@ -64,8 +87,19 @@ class Game:
                 sys.exit()
             if event.type == pygame.KEYDOWN:
                 self.pressing_key.add(event.key)
+                if event.key == pygame.K_0:
+                    self.click_add = None
+                elif event.key == pygame.K_1:
+                    self.click_add = "block"
+                if event.key == pygame.K_s:
+                    self.save_data()
             if event.type == pygame.KEYUP:
                 self.pressing_key.remove(event.key)
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if self.click_add:
+                    _type = self.click_add
+                    conf = {"id":str(time.time()), "type": _type, "pos": event.pos}
+                    self.add_actor_by_conf(conf)
             for actor in self.actors.values():
                 actor.check_event(event)
     def is_pressing(self, key):

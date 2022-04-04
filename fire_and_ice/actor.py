@@ -31,7 +31,8 @@ def make_rect_shape(space, rect, body_type=pymunk.Body.DYNAMIC):
 
 
 class Actor:
-    def __init__(self, game, img_paths, center, body_type=pymunk.Body.DYNAMIC):
+    def __init__(self, id, game, img_paths, center, body_type=pymunk.Body.DYNAMIC):
+        self.id = id
         self.game = game
         self.images = [pygame.image.load("images/" + p) for p in img_paths]
         self.rect = self.images[0].get_rect()
@@ -44,6 +45,15 @@ class Actor:
         self.angle = 0
         self.visibility = True
         self.setMoveKeys()
+    
+    def export_conf(self):
+        return {"id": self.id,
+                "type": self.type,
+                "pos": self.pos}
+
+    @property
+    def pos(self):
+        return self.rect.center
 
         # self.space = game.space
         # self.body=self.shape.body
