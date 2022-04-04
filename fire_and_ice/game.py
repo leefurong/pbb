@@ -1,6 +1,6 @@
 from ice import Ice
 from fire import Fire
-from floor import Floor
+from block import Block
 import pygame, sys, pymunk, pymunk.pygame_util
 from game_data_loader import load
 
@@ -13,28 +13,51 @@ class Game:
         self.screen = pygame.display.set_mode(
             (800, 600))
         self.draw_options = pymunk.pygame_util.DrawOptions(self.screen)
-        self.load_data("guanqia1.txt")
-        self.actors = {
-            "ice": Ice(self),
-            "fire": Fire(self)
-        }
-        self.addFloor()
+        self.actors={}
+        self.load_data("guanqia1.json")
         self.pressing_key = set()
     
-    def load_data(filename):
+    def load_data(self, filename):
         actor_confs = load(filename)
         for conf in actor_confs:
             self.add_actor_by_conf(conf)
 
-    def add_actor_by_conf(conf):
+    def add_actor_by_conf(self, conf):
+        id = conf["id"]
+        pos = conf["pos"]
+        _type = conf["type"]
+        if _type=="block":
+            self.add_block(id, pos)
+        elif _type=="button":
+            self.add_button(id, pos)
+        elif _type=="door":
+            self.add_door(id, pos, conf["controlled_by"])
+        elif _type == "exit":
+            self.add_exit(id, pos, conf["for"])
+        elif _type=="ice":
+            self.add_ice(id)
+        elif _type=="fire":
+            self.add_fire(id)
+
+    def add_button(self, id, pos):
         pass
-    def addFloor(self):
-        y = 600
-        x = 0
-        for i in range(20):
-            k = "floor"+str(i)
-            self.actors[k] = Floor(self, (x, y))
-            x += 60
+
+    def add_door(self, id, pos, controlled_by):
+        pass
+
+    def add_exit(self, id, pos, _for):
+        pass
+
+    def add_block(self, id, pos):
+        self.actors[id] = Block(self, pos)
+
+    def add_ice(self, id):
+        self.actors[id] = Ice(self)
+    
+    def add_fire(self, id):
+        self.actors[id] = Fire(self)
+
+
     def handleEvents(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:

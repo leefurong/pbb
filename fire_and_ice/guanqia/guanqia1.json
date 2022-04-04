@@ -1,12 +1,49 @@
 [
-    {"type": "wall",
-    "pos": [250, 280]},
+    {"id": "block1",
+    "type": "block",
+    "pos": [0, 600]},
+    
+    {"id": "block2",
+    "type": "block",
+    "pos": [80, 600]},
+
+    {"id": "block3",
+    "type": "block",
+    "pos": [160, 600]},
+
+    {"id": "block4",
+    "type": "block",
+    "pos": [240, 600]},
+
+    {"id": "block5",
+    "type": "block",
+    "pos": [320, 600]},
 
     {"id": "btn1",
     "type": "button",
     "pos": [300, 500]},
 
-    {"type": "door",
+    {"id":"door1",
+    "type": "door",
     "controlled_by": "btn1",
-    "pos": [400, 600]}
+    "pos": [400, 600]},
+
+    {"id": "exit1",
+    "type": "exit",
+    "for": "fire",
+    "pos": [400, 800]},
+
+    {"id": "exit1",
+    "type": "exit",
+    "for": "ice",
+    "pos": [200, 800]},
+
+    {"id": "ice",
+    "type": "ice",
+    "pos": [300, 300]},
+
+    {"id": "fire",
+    "type": "fire",
+    "pos": [200, 300]}
+
 ]
