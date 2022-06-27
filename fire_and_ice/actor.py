@@ -45,7 +45,9 @@ class Actor:
         self.angle = 0
         self.visibility = True
         self.setMoveKeys()
-    
+    def touch(self,pos):
+        return self.rect.collidepoint(pos)
+
     def export_conf(self):
         return {"id": self.id,
                 "type": self.type,

@@ -19,7 +19,13 @@ class Game:
         self.load_data(_map)
         self.pressing_key = set()
         self.click_add = None
-
+    def remove_actor_at(self,pos):
+        dd={}
+        d=self.actors
+        for i in d:
+            if not d[i].touch(pos):
+                dd[i]=d[i]
+        self.actors=dd
     def select_map(self):
         maps = os.listdir("guanqia/")
         ans = self.ask(str(maps)+"\n请选择地图:  ")
@@ -35,7 +41,7 @@ class Game:
     
     def save_data(self):
         confs = []
-        for actor in self.actors:
+        for actor in self.actors.values():
             print("type of actor:", type(actor))
             conf = actor.export_conf()
             confs.append(conf)
@@ -91,7 +97,7 @@ class Game:
                     self.click_add = None
                 elif event.key == pygame.K_1:
                     self.click_add = "block"
-                if event.key == pygame.K_s:
+                if event.key == pygame.K_p:
                     self.save_data()
             if event.type == pygame.KEYUP:
                 self.pressing_key.remove(event.key)
@@ -100,6 +106,8 @@ class Game:
                     _type = self.click_add
                     conf = {"id":str(time.time()), "type": _type, "pos": event.pos}
                     self.add_actor_by_conf(conf)
+                else:
+                    self.remove_actor_at(event.pos)
             for actor in self.actors.values():
                 actor.check_event(event)
     def is_pressing(self, key):
