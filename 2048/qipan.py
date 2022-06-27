@@ -22,6 +22,12 @@ class qipan:
                     return True
         return False
 
+    def canMoveTo(self,v,hang2, lie2):
+        return self.gezi[hang2][lie2]==0 or self.gezi[hang2][lie2]==v
+
+    def what(self, hang, lie):
+        return self.gezi[hang][lie]
+
 if __name__=="__main__":
     a = qipan(2)
     a.set(0, 1, 26)
