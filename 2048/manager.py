@@ -1,6 +1,8 @@
 from qipan import qipan
 class manager:
-    def __init__(self):
+    def __init__(self, Actor, clock):
+        self.Actor = Actor
+        self.clock = clock
         self.q = qipan()
         pass
     def up(self):
@@ -13,3 +15,6 @@ class manager:
         pass
     def right(self):
         pass
+    def fapai(self):
+        card = Card(self.Actor, self.clock)
+        card.moveto()

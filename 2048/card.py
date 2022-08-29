@@ -4,12 +4,7 @@ from pygame import Rect
 from functools import partial
 from random import choice
 clock=None
-def r(a):
-    l = a.left
-    t = a.top
-    w = a.width
-    h = a.height
-    return Rect(l, t, w, h)
+
 
 def c(x):
     if x<=2:return ((234,222,210),(100,91,82))
@@ -24,32 +19,37 @@ def c(x):
 
 
 class Card:
-    def __init__(self, Actor, clck):
+    def __init__(self, ctx, size, n=2):
         global clock
-        clock = clck
-        self.actor=Actor("gua", anchor=("left", "top"))
-        self.actor.x=0
-        self.actor.y=0
+        clock = ctx.clock
+        self.x=0
+        self.y=0
         self.tasks = set()
-        self.n = 2
+        self.n = n
+        self.size = size
 
+
+    def r(self):
+        return Rect(self.x, self.y, self.size, self.size)
 
     def goto(self, x, y):
-        self.actor.x=x
-        self.actor.y=y
+        self.x=x
+        self.y=y
     def clear_tasks(self):
         self.tasks.clear()
     def slideTo(self, x=0, y=0, s=1):
         for i in range(s*50):
-            xstep = (x-self.actor.x)/(s*50)
-            ystep = (y - self.actor.y) / (s * 50)
-            newx = self.actor.x+i*xstep
-            newy = self.actor.y+i*ystep
+            xstep = (x-self.x)/(s*50)
+            ystep = (y - self.y) / (s * 50)
+            newx = self.x+i*xstep
+            newy = self.y+i*ystep
             gt = partial(self.goto, newx, newy)
             self.tasks.add(gt)
             clock.schedule_unique(gt, 0.02*i)
         clock.schedule_unique(self.clear_tasks, s+0.01)
+    def getCenter(self):
+        return [self.x+self.size/2, self.y+self.size/2]
     def draw(self, screen):
         bg, fg = c(self.n)
-        screen.draw.filled_rect(r(self.actor), color=bg)
-        screen.draw.text(str(int(self.n)), center=self.actor.center,color=fg)
+        screen.draw.filled_rect(self.r(), color=bg)
+        screen.draw.text(str(int(self.n)), center=self.getCenter(),color=fg)
