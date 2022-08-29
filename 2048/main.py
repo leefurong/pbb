@@ -18,6 +18,7 @@ def createContext():
     ctx = Context()
     ctx.Actor = Actor
     ctx.clock = clock
+    ctx.keys = keys
     return ctx
 
 ctx = createContext()
@@ -26,6 +27,10 @@ qipan = Qipan(size, (275, 1),700, ctx)
 for i in range(2):
     qipan.fapai()
 # qipan.fapai()
+
+def on_key_down(key):
+    qipan.on_key_down(key)
+
 
 def draw():
     screen.fill((128, 128, 128))

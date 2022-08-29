@@ -37,6 +37,12 @@ class Qipan:
             hang * self.cell_width + self.pos[1]+5,
         )
         self.cards[hang][lie] = card
+    
+    def on_key_down(self, key):
+        if key == self.ctx.keys.LEFT:
+            print("left")
+        if key == self.ctx.keys.RIGHT:
+            print("right")
 
 
 
