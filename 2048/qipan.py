@@ -1,3 +1,5 @@
+from pickle import TRUE
+from pprint import PrettyPrinter
 from pygame import Rect
 import random
 from card import Card
@@ -37,12 +39,44 @@ class Qipan:
             hang * self.cell_width + self.pos[1]+5,
         )
         self.cards[hang][lie] = card
-    
+
+    def detect(self, x, y, num):
+        if x<0 or x>=self.size or y<0 or y>=self.size or \
+            self.gezi[y][x]<0 or self.gezi[y][x]!=0 and self.gezi[y][x]!=num:
+            return -1
+        if self.gezi[y][x]:
+            return num*-2
+        return num
+    def move(self, dx, dy):
+        rangedict = {-1: range(self.size),
+                      0: range(self.size),
+                      1: range(self.size-1, -1, -1)}
+        range_x = rangedict[dx]
+        range_y = rangedict[dy][0:3]
+        for row in range_y:
+            for col in range_x:
+                print(row, col)
+                if self.gezi[row][col]==0:continue
+                x=col
+                y=row
+                while True:
+                    sum=self.detect(y+dy, x+dx, self.gezi[y][x])
+                    if sum==-1:break
+                    self.set(y, x, 0)
+                    y+=dy
+                    x+=dx
+                    print("    ", x, y)
+                    self.set(y, x, sum)
+        print(self.gezi)
+
+
     def on_key_down(self, key):
         if key == self.ctx.keys.LEFT:
             print("left")
         if key == self.ctx.keys.RIGHT:
             print("right")
+        if key == self.ctx.keys.DOWN:
+            self.move(0, 1)
 
 
 

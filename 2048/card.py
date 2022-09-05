@@ -50,6 +50,7 @@ class Card:
     def getCenter(self):
         return [self.x+self.size/2, self.y+self.size/2]
     def draw(self, screen):
+        if not self.n: return
         bg, fg = c(self.n)
         screen.draw.filled_rect(self.r(), color=bg)
         screen.draw.text(str(int(self.n)), center=self.getCenter(),color=fg)
