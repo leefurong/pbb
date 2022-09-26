@@ -10,7 +10,9 @@ from context import Context
 # c2.slideTo(700, 200, 7)
 # c3 = Card(Actor, clock)
 # c3.slideTo(900, 400, 3)
-size=2
+size=int(input("您想玩多大？"))
+n = int(input("您想发多大?"))
+num = int(input("每次发几张牌?"))
 HEIGHT=700
 WIDTH=1250
 
@@ -23,14 +25,20 @@ def createContext():
 
 ctx = createContext()
 
-qipan = Qipan(size, (275, 1),700, ctx, 2)
-qipan.fapai_n()
-qipan.refresh_cards()
-# qipan.set()
-# qipan.fapai()
+qipan = None
+def beg():
+    global qipan
+    qipan = Qipan(size, (275, 1),700, ctx, n, num)
+    qipan.fapai_n()
+    qipan.refresh_cards()
+    # qipan.set()
+    # qipan.fapai()
 
 def on_key_down(key):
+    if key==ctx.keys.SPACE:
+        beg()
     qipan.on_key_down(key)
+
 
 
 def draw():
@@ -39,4 +47,6 @@ def draw():
 
 def update():
     pass
+
+beg()
 pgzrun.go()

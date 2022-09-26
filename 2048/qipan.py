@@ -13,7 +13,7 @@ class direction:
     left=2
     right=3
 class Qipan:
-    def __init__(self, size, pos, edge_len, ctx, xinpai=2):
+    def __init__(self, size, pos, edge_len, ctx, xinpai=2, faduoshao=2):
         self.ctx = ctx
         self.size=size
         self.cell_width = edge_len/size
@@ -23,6 +23,7 @@ class Qipan:
         self.xinpai = xinpai
         self.isMoving = False
         self.dead = False
+        self.faduoshao = faduoshao
     def inside(self , hang, lie):
         return 0<=hang<self.size and self.size>lie>=0
     def hasMate(self , hang, lie):
@@ -161,7 +162,7 @@ class Qipan:
         self.draw_bg(screen)
         self.draw_cards(screen)
         if self.dead:
-            screen.draw.text("You are dead!!!",
+            screen.draw.text("You are dead!!! Press Space to play again!",
                              center=(200, 200),
                              color=(0, 0, 0))
 
@@ -177,8 +178,8 @@ class Qipan:
             self.set(weizhi[0], weizhi[1], self.xinpai)
             self.refresh_cards()
 
-    def fapai_n(self, n=2):
-        for i in range(n): self.fapai()
+    def fapai_n(self):
+        for i in range(self.faduoshao): self.fapai()
         if self.sile():
             self.dead = True
 
