@@ -10,7 +10,7 @@ from context import Context
 # c2.slideTo(700, 200, 7)
 # c3 = Card(Actor, clock)
 # c3.slideTo(900, 400, 3)
-size=4
+size=2
 HEIGHT=700
 WIDTH=1250
 
@@ -23,9 +23,9 @@ def createContext():
 
 ctx = createContext()
 
-qipan = Qipan(size, (275, 1),700, ctx)
-for i in range(16):
-    qipan.fapai()
+qipan = Qipan(size, (275, 1),700, ctx, 2)
+qipan.fapai_n()
+qipan.refresh_cards()
 # qipan.set()
 # qipan.fapai()
 

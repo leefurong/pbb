@@ -3,6 +3,7 @@ from pgzero import clock
 from pygame import Rect
 from functools import partial
 from random import choice
+import time
 clock=None
 
 
@@ -37,13 +38,17 @@ class Card:
         self.y=y
     def clear_tasks(self):
         self.tasks.clear()
+    def goto_future(self, x1, y1, x2, y2, beg_time, end_time):
+        now = time.time()
+        rate = (now-beg_time)/(end_time-beg_time)
+        x = x1 + (x2-x1)*rate
+        y = y1 + (y2-y1)* rate
+        self.goto(x, y)
+        
     def slideTo(self, x=0, y=0, s=1):
-        for i in range(s*50):
-            xstep = (x-self.x)/(s*50)
-            ystep = (y - self.y) / (s * 50)
-            newx = self.x+i*xstep
-            newy = self.y+i*ystep
-            gt = partial(self.goto, newx, newy)
+        now = time.time()
+        for i in range(int(s*50)):
+            gt = partial(self.goto_future, self.x, self.y, x, y, now, now+s)
             self.tasks.add(gt)
             clock.schedule_unique(gt, 0.02*i)
         clock.schedule_unique(self.clear_tasks, s+0.01)

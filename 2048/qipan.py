@@ -1,4 +1,5 @@
 from pickle import TRUE
+import copy
 from pprint import PrettyPrinter
 from pygame import Rect
 import random
@@ -18,8 +19,10 @@ class Qipan:
         self.cell_width = edge_len/size
         self.pos = pos
         self.gezi = [[0]*size for _ in range(size)]
-        self.cards = [[None]*size for _ in range(size)]
+        self.cards = [[Card(self.ctx, self.cell_width-10, 0) for _ in range(size)] for _ in range(size)]
         self.xinpai = xinpai
+        self.isMoving = False
+        self.dead = False
     def inside(self , hang, lie):
         return 0<=hang<self.size and self.size>lie>=0
     def hasMate(self , hang, lie):
@@ -33,29 +36,36 @@ class Qipan:
 
     def set(self, hang, lie, v):
         self.gezi[hang][lie] = v
-        card = Card(self.ctx, self.cell_width-10, v)
-        card.goto(
-            lie * self.cell_width + self.pos[0]+5,
-            hang * self.cell_width + self.pos[1]+5,
-        )
-        self.cards[hang][lie] = card
 
-    def detect(self, x, y, num):
+    def refresh_cards(self):
+        for hang in range(self.size):
+            for lie in range(self.size):
+                card = self.cards[hang][lie]
+                card.goto(
+                    lie * self.cell_width + self.pos[0]+5,
+                    hang * self.cell_width + self.pos[1]+5,
+                )
+                card.n = self.gezi[hang][lie]
+# 2
+# 0
+# -4
+    def detect(self, y, x, num):
         if x<0 or x>=self.size or y<0 or y>=self.size or \
             self.gezi[y][x]<0 or self.gezi[y][x]!=0 and self.gezi[y][x]!=num:
             return -1
         if self.gezi[y][x]:
             return num*-2
         return num
-    def move(self, dx, dy):
+    def move(self, dx, dy, real=True):
+        gezi_bak = copy.deepcopy(self.gezi)
+
         rangedict = {-1: range(self.size),
                       0: range(self.size),
                       1: range(self.size-1, -1, -1)}
         range_x = rangedict[dx]
-        range_y = rangedict[dy][0:3]
+        range_y = rangedict[dy]
         for row in range_y:
             for col in range_x:
-                print(row, col)
                 if self.gezi[row][col]==0:continue
                 x=col
                 y=row
@@ -65,18 +75,43 @@ class Qipan:
                     self.set(y, x, 0)
                     y+=dy
                     x+=dx
-                    print("    ", x, y)
                     self.set(y, x, sum)
-        print(self.gezi)
+                if real:
+                    self.cards[row][col].slideTo(
+                        x * self.cell_width + self.pos[0] + 5,
+                        y * self.cell_width + self.pos[1] + 5,
+                        0.5
+                    )
 
+        for row in range_y:
+            for col in range_x:
+                self.gezi[row][col] = abs(self.gezi[row][col])
+        self.isMoving = True
+        self.ctx.clock.schedule_unique(self.moveEnd, 0.5)
+
+        changed = self.gezi != gezi_bak
+        if not real:
+            self.gezi = gezi_bak
+        return changed
+
+    def moveEnd(self):
+        self.isMoving = False
 
     def on_key_down(self, key):
-        if key == self.ctx.keys.LEFT:
-            print("left")
-        if key == self.ctx.keys.RIGHT:
-            print("right")
-        if key == self.ctx.keys.DOWN:
-            self.move(0, 1)
+        if self.isMoving:
+            pass
+        else:
+            if key == self.ctx.keys.LEFT:
+                self.move(-1, 0)
+            if key == self.ctx.keys.RIGHT:
+                self.move(1, 0)
+            if key == self.ctx.keys.UP:
+                self.move(0, -1)
+            if key == self.ctx.keys.DOWN:
+                self.move(0, 1)
+            self.ctx.clock.schedule_unique(self.refresh_cards, 0.5)
+            self.ctx.clock.schedule_unique(self.fapai_n, 0.5)
+
 
 
 
@@ -121,9 +156,14 @@ class Qipan:
             for col in range(self.size):
                 self.cards[row][col] and self.cards[row][col].draw(screen)
 
+
     def draw(self, screen):
         self.draw_bg(screen)
         self.draw_cards(screen)
+        if self.dead:
+            screen.draw.text("You are dead!!!",
+                             center=(200, 200),
+                             color=(0, 0, 0))
 
     def fapai(self):
         # 怎样决定发在什么位置?
@@ -132,9 +172,21 @@ class Qipan:
             for  c in range(self.size):
                 if not self.gezi[r][c]:
                     empties.append([r, c])
-        weizhi = random.choice(empties)
-        self.set(weizhi[0], weizhi[1], self.xinpai)
-        print(self.gezi)
+        if len(empties):
+            weizhi = random.choice(empties)
+            self.set(weizhi[0], weizhi[1], self.xinpai)
+            self.refresh_cards()
+
+    def fapai_n(self, n=2):
+        for i in range(n): self.fapai()
+        if self.sile():
+            self.dead = True
+
+    def sile(self):
+        canMove = self.move(1, 0, False) or self.move(-1, 0, False) or self.move(0, 1, False) or self.move(0, -1, False)
+        return not canMove
+
+
 
 
 
